@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#eadbd2" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>Mon Village — Empowered Maman</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+    :root{
+      color-scheme:light dark;
+      --page:#eadbd2; --paper:#fffaf7; --surface:#ffffff; --soft:#f8ede7;
+      --soft-2:#f3e2d8; --ink:#382921; --muted:#735f55; --accent:#bf5f52;
+      --accent-deep:#97463d; --plum:#6f4b59; --sage:#6e826f; --gold:#bd8e50;
+      --line:#ead8ce; --ok:#4f755d; --warn:#a46728; --danger:#a94040;
+      --shadow:0 22px 70px rgba(63,39,29,.16);
+      --radius-xl:28px; --radius-lg:20px; --radius-md:14px;
+    }
+    @media (prefers-color-scheme:dark){
+      :root{
+        --page:#211917; --paper:#2b211e; --surface:#352926; --soft:#3b2d29;
+        --soft-2:#49352f; --ink:#fff7f1; --muted:#d6c1b7; --accent:#e78373;
+        --accent-deep:#f29a8d; --plum:#d29bac; --sage:#9eb49f; --gold:#ddb77d;
+        --line:#57423b; --ok:#8eb398; --warn:#e0ad6c; --danger:#ff9793;
+        --shadow:0 22px 70px rgba(0,0,0,.35);
+      }
+    }
+    *{box-sizing:border-box}
+    html{background:var(--page)}
+    body{margin:0;background:var(--page);color:var(--ink);font-family:"DM Sans",sans-serif;min-height:100vh}
+    button,input,select,textarea{font:inherit;color:inherit}
+    button{cursor:pointer}
+    a{color:inherit}
+    .app{width:min(100%,520px);min-height:100vh;margin:0 auto;background:var(--paper);position:relative;overflow:hidden;box-shadow:var(--shadow)}
+    .screen{display:none;min-height:100vh;padding:24px 22px 112px;animation:fade .22s ease}
+    .screen.active{display:block}
+    @keyframes fade{from{opacity:.45}to{opacity:1}}
+    .topline{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:26px}
+    .lang-toggle{display:inline-flex;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:3px}
+    .lang-toggle button{border:0;background:transparent;border-radius:999px;padding:7px 11px;color:var(--muted);font-weight:700;font-size:12px}
+    .lang-toggle button.active{background:var(--surface);color:var(--accent-deep);box-shadow:0 2px 8px rgba(60,30,20,.08)}
+    .prototype{font-size:11px;color:var(--muted);line-height:1.35;max-width:210px;text-align:right}
+    .back{width:40px;height:40px;border:1px solid var(--line);border-radius:50%;background:var(--surface);display:grid;place-items:center}
+    h1,h2,h3,p{margin-top:0}
+    h1,h2{font-family:"Playfair Display",serif;letter-spacing:-.025em}
+    h1{font-size:clamp(38px,10vw,54px);line-height:1.01;margin-bottom:15px}
+    h2{font-size:31px;line-height:1.08;margin-bottom:10px}
+    h3{font-size:17px;margin-bottom:7px}
+    p{line-height:1.55;color:var(--muted)}
+    .eyebrow{font-size:12px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--accent-deep);margin-bottom:12px}
+    .onboard-art{height:196px;margin:22px 0 28px;position:relative;background:var(--soft);border-radius:48% 48% 20px 20px;overflow:hidden}
+    .onboard-art:before{content:"";position:absolute;width:190px;height:190px;border-radius:50%;background:#d68b79;left:50%;top:25px;transform:translateX(-50%)}
+    .mother{position:absolute;left:50%;top:43px;transform:translateX(-50%);width:155px;height:170px}
+    .mother .head{position:absolute;width:60px;height:70px;background:#805541;border-radius:45% 45% 52% 52%;left:49px;top:0}
+    .mother .face{position:absolute;width:44px;height:47px;background:#dca986;border-radius:48% 48% 52% 52%;left:57px;top:13px}
+    .mother .body{position:absolute;width:150px;height:117px;background:var(--plum);border-radius:80px 80px 20px 20px;left:3px;top:56px}
+    .mother .baby{position:absolute;width:75px;height:50px;background:#f1c9ad;border-radius:48px 45px 40px 45px;left:44px;top:81px;transform:rotate(-9deg);border:8px solid #e8b5a1}
+    .mother .arm{position:absolute;width:104px;height:18px;background:#dca986;border-radius:20px;left:26px;top:118px;transform:rotate(-8deg)}
+    .form-step{display:none}.form-step.active{display:block}
+    .field{margin:20px 0}
+    label,.label{display:block;font-weight:700;font-size:14px;margin-bottom:9px}
+    input[type=text],select,textarea{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:var(--radius-md);padding:15px 16px;outline:none}
+    input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent)}
+    .choice-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .choice,.scale button,.chip{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius-md);padding:13px 12px;font-weight:600;text-align:left}
+    .choice.selected,.scale button.selected{border-color:var(--accent);background:var(--soft-2);color:var(--accent-deep)}
+    .primary,.secondary{border:0;border-radius:999px;padding:15px 20px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:9px}
+    .primary{background:var(--accent);color:white;width:100%;box-shadow:0 8px 22px color-mix(in srgb,var(--accent) 28%,transparent)}
+    .primary:hover{background:var(--accent-deep)}
+    .secondary{background:var(--soft);color:var(--ink)}
+    .text-btn{border:0;background:transparent;color:var(--accent-deep);font-weight:800;padding:10px}
+    .progress{height:5px;background:var(--soft-2);border-radius:9px;overflow:hidden;margin-bottom:28px}.progress span{display:block;height:100%;background:var(--accent);transition:width .25s}
+    .home-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px}
+    .hello{font-family:"Playfair Display",serif;font-size:32px;line-height:1.05;margin:0}.date{font-size:13px;color:var(--muted);margin-top:6px}
+    .avatar{width:48px;height:48px;border-radius:50%;background:var(--soft-2);display:grid;place-items:center;color:var(--accent-deep);font-weight:800}
+    .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:19px;margin-bottom:14px;box-shadow:0 8px 24px rgba(75,43,32,.055)}
+    .hero-card{background:var(--plum);color:white;border:0;padding:23px;position:relative;overflow:hidden}
+    .hero-card:after{content:"";position:absolute;width:125px;height:125px;border:24px solid rgba(255,255,255,.09);border-radius:50%;right:-48px;top:-39px}
+    .hero-card p{color:rgba(255,255,255,.78);max-width:310px;margin-bottom:18px}.hero-card .primary{width:auto;background:#fff;color:#5c3544;padding:12px 17px}
+    .section-label{display:flex;align-items:center;justify-content:space-between;margin:25px 2px 12px}.section-label h3{margin:0;font-size:18px}.section-label span{font-size:12px;color:var(--muted)}
+    .quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+    .quick{border:0;background:var(--surface);border-radius:var(--radius-md);padding:16px;text-align:left;min-height:115px;box-shadow:0 6px 20px rgba(75,43,32,.06);border:1px solid var(--line)}
+    .quick .icon{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--accent-deep);margin-bottom:18px}.quick strong{display:block;font-size:14px;line-height:1.25}.quick small{display:block;color:var(--muted);margin-top:5px}
+    .tile-grid{gap:9px;margin-top:4px}.quick.tile{min-height:0;padding:14px 12px}.quick.tile strong{font-size:13.5px}
+    .notice{border-radius:var(--radius-md);padding:14px 15px;background:var(--soft);font-size:13px;line-height:1.45;color:var(--muted)}
+    .bottom-nav{position:fixed;z-index:30;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,520px);display:none;grid-template-columns:repeat(4,1fr);background:color-mix(in srgb,var(--paper) 94%,transparent);border-top:1px solid var(--line);padding:9px 12px max(9px,env(safe-area-inset-bottom));backdrop-filter:blur(14px)}
+    .bottom-nav.show{display:grid}.nav-btn{border:0;background:transparent;color:var(--muted);font-size:11px;font-weight:700;padding:4px;display:grid;justify-items:center;gap:3px}.nav-btn.active{color:var(--accent-deep)}.nav-btn svg{width:22px;height:22px}
+    .question{margin:0 0 28px}.question h3{font-family:"Playfair Display",serif;font-size:25px;line-height:1.2;margin-bottom:18px}.scale{display:grid;gap:9px}.scale button{text-align:left;position:relative;padding-left:44px}.scale button:before{content:"";position:absolute;left:15px;top:50%;transform:translateY(-50%);width:17px;height:17px;border:2px solid var(--line);border-radius:50%}.scale button.selected:before{border:5px solid var(--accent)}
+    .step-count{font-size:13px;color:var(--muted);font-weight:700}
+    .result-mark{width:72px;height:72px;border-radius:50%;background:var(--soft-2);display:grid;place-items:center;margin:5px 0 20px;color:var(--accent-deep)}
+    .result-mark svg{width:34px;height:34px}.rec-reason{border-left:3px solid var(--accent);padding-left:14px;margin:18px 0}.rec-reason p{margin:0;font-size:14px}
+    .session-banner{min-height:192px;border-radius:var(--radius-lg);background:var(--sage);color:white;padding:23px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;margin:15px 0}.session-banner:before{content:"";position:absolute;width:150px;height:150px;border:2px solid rgba(255,255,255,.18);border-radius:50%;right:-20px;top:-25px}.session-banner h3{font-family:"Playfair Display",serif;font-size:28px;margin:0}.session-banner p{color:rgba(255,255,255,.82);margin:7px 0 0}
+    .tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}.tag{font-size:11px;font-weight:700;background:var(--soft);color:var(--muted);padding:7px 10px;border-radius:999px}
+    .exercise-list{list-style:none;padding:0;margin:14px 0}.exercise-list li{display:flex;gap:13px;padding:13px 0;border-bottom:1px solid var(--line)}.exercise-list li:last-child{border-bottom:0}.num{width:31px;height:31px;border-radius:50%;background:var(--soft);display:grid;place-items:center;font-weight:800;color:var(--accent-deep);flex:0 0 auto}.exercise-list span{color:var(--muted);font-size:13px}
+    .player{text-align:center;padding-top:30px}.player-orb{width:190px;height:190px;border-radius:50%;margin:20px auto;background:var(--sage);position:relative;display:grid;place-items:center;color:white;box-shadow:0 20px 48px color-mix(in srgb,var(--sage) 30%,transparent)}.player-orb:after{content:"";position:absolute;inset:12px;border:1px solid rgba(255,255,255,.3);border-radius:50%}.player-orb strong{font-family:"Playfair Display",serif;font-size:27px;max-width:130px;line-height:1.1}.time{font-size:38px;font-weight:700;font-variant-numeric:tabular-nums}.player-controls{display:flex;justify-content:center;align-items:center;gap:22px;margin:25px 0}.round{width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center}.round.main{width:66px;height:66px;background:var(--accent);color:white;border:0}.timeline{height:7px;background:var(--soft-2);border-radius:9px;overflow:hidden}.timeline span{display:block;width:0;height:100%;background:var(--accent);transition:width .5s}.safety-note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:22px}
+    .chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 185px);min-height:500px}.chat-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}.chat-presence{width:42px;height:42px;border-radius:50%;background:var(--soft-2);display:grid;place-items:center;color:var(--accent-deep)}.chat-head p{margin:2px 0 0;font-size:12px}.messages{flex:1;overflow-y:auto;padding:2px 1px 16px}.bubble{max-width:86%;padding:12px 14px;border-radius:18px;margin:8px 0;font-size:14px;line-height:1.5}.bubble.bot{background:var(--soft);border-bottom-left-radius:5px}.bubble.user{background:var(--accent);color:white;margin-left:auto;border-bottom-right-radius:5px}.bubble p{color:inherit;margin:0}.chips{display:flex;flex-wrap:wrap;gap:8px;padding:11px 0 2px;border-top:1px solid var(--line)}.chip{padding:9px 12px;border-radius:999px;color:var(--accent-deep);font-size:12px;background:var(--surface)}.chip.danger{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 45%,var(--line))}
+    .chip.selected{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+    .phase{margin-bottom:20px}.phase-head{display:flex;align-items:center;gap:8px;margin:4px 2px 10px;flex-wrap:wrap}.phase-head strong{font-size:16px}.here-badge{font-size:11px;font-weight:800;color:var(--accent-deep);background:#fbe9e2;border-radius:999px;padding:4px 11px}
+    .crisis{background:color-mix(in srgb,var(--danger) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--danger) 35%,var(--line));border-radius:var(--radius-lg);padding:18px;margin:10px 0}.crisis h3{color:var(--danger)}.crisis .resource{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid var(--line);padding:12px 0}.crisis a{font-weight:800;color:var(--danger);text-decoration:none}.crisis p{font-size:13px}
+    .epds-intro ul{padding-left:20px;color:var(--muted);line-height:1.6}.epds-q{display:none}.epds-q.active{display:block}.epds-q h3{font-family:"Playfair Display",serif;font-size:23px;line-height:1.25}.epds-result .score{font-family:"Playfair Display",serif;font-size:74px;color:var(--accent-deep);line-height:1}.band{padding:15px;border-radius:var(--radius-md);background:var(--soft);margin:16px 0}.band strong{display:block;margin-bottom:5px}
+    .breath-stage{text-align:center;padding-top:25px}.breath-orb{width:210px;height:210px;margin:36px auto;border-radius:50%;background:var(--plum);display:grid;place-items:center;color:white;box-shadow:0 18px 50px color-mix(in srgb,var(--plum) 28%,transparent);transform:scale(.72)}.breath-orb.active{animation:breathe 14s ease-in-out infinite}@keyframes breathe{0%,100%{transform:scale(.72)}28%{transform:scale(1)}57%{transform:scale(1)}100%{transform:scale(.72)}}.breath-orb strong{font-family:"Playfair Display",serif;font-size:30px}.breath-count{font-size:48px;font-weight:700;font-variant-numeric:tabular-nums}.breath-help{max-width:330px;margin:0 auto 22px}.breath-actions{display:flex;gap:10px}.breath-actions .primary{flex:1}.breath-actions .secondary{flex:0 0 auto}
+    .journal-card{background:var(--soft);border-radius:var(--radius-xl);padding:26px;margin:14px 0 20px}.journal-card blockquote{font-family:"Playfair Display",serif;font-size:27px;line-height:1.28;margin:0;color:var(--ink)}textarea{min-height:190px;resize:vertical;line-height:1.55}.button-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.button-row button{width:100%}.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--ink);color:var(--paper);border-radius:999px;padding:10px 15px;font-size:12px;z-index:50;transition:.2s;pointer-events:none}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .resource-list{display:grid;gap:10px}.resource-card{border:1px solid var(--line);background:var(--surface);padding:16px;border-radius:var(--radius-md);text-align:left}.resource-card strong{display:block}.resource-card small{color:var(--muted)}
+    .need-row{display:flex;align-items:center;gap:13px;width:100%;border:1px solid var(--line);background:var(--surface);padding:14px 15px;border-radius:var(--radius-md);text-align:left;box-shadow:0 6px 20px rgba(75,43,32,.06)}
+    .need-row+.need-row{margin-top:9px}.need-row .nicon{width:40px;height:40px;border-radius:50%;background:var(--soft);display:grid;place-items:center;font-size:19px;flex:0 0 auto;color:var(--accent-deep)}
+    .need-row .ntext{flex:1;min-width:0}.need-row .ntext strong{display:block;font-size:14px;line-height:1.3}.need-row .ntext small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+    .need-row .chev{color:var(--muted);font-size:19px;font-weight:700;flex:0 0 auto}
+    .resource-card.need-action{width:100%;cursor:pointer}
+    .home-cta{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:0;border-radius:var(--radius-lg);padding:18px;margin:14px 0 0;color:#fff;box-shadow:0 10px 26px rgba(75,43,32,.12)}
+    .home-cta .nicon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.18);font-size:19px;font-weight:800;flex:0 0 auto}
+    .home-cta strong{display:block;font-size:16px;line-height:1.3}
+    .home-cta small{display:block;opacity:.88;font-size:13px;margin-top:3px}
+    .home-cta .chev{margin-left:auto;font-size:24px;opacity:.85;flex:0 0 auto}
+    .triage-btn{background:var(--plum)}
+    .plan-card{background:var(--sage)}
+    .level{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--ok);border-radius:var(--radius-lg);padding:18px;margin-bottom:14px}
+    .level.orange{border-left-color:var(--warn)}
+    .level.red{border-left-color:var(--danger);background:color-mix(in srgb,var(--danger) 7%,var(--surface))}
+    .level h3{margin:0 0 8px;font-size:17px}
+    .level p{font-size:14px;margin:0 0 6px}
+    .level ul{margin:8px 0 4px;padding-left:20px;color:var(--muted);font-size:14px;line-height:1.7}
+    .level .secondary{margin-top:10px}
+    .check-sub{font-size:13px;color:var(--muted);margin:-8px 0 18px;line-height:1.5}
+    .plan-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+    .plan-row:last-child{border-bottom:0}
+    .plan-row span{color:var(--muted);flex:0 0 auto;max-width:45%}
+    .plan-row strong{text-align:right;font-weight:600}
+    .plan-list{list-style:none;padding:0;margin:0}
+    .plan-list li{padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+    .plan-list li:last-child{border-bottom:0}
+    .crisis-wrap-urgent{border:2px solid var(--danger);border-radius:var(--radius-lg);padding:6px;margin:12px 0}
+    .crisis-wrap-urgent .crisis{margin:0}
+    .editing .app [data-i18n],.editing .app [data-ov]{outline:2px dashed var(--accent);outline-offset:3px}
+    .edit-pen{border:0;background:transparent;opacity:.35;font-size:19px;padding:8px;line-height:1;color:var(--ink)}
+    .edit-pen:hover{opacity:.85}
+    .pin-modal{position:fixed;z-index:60;inset:0;display:grid;place-items:center;background:rgba(40,25,20,.45);padding:24px}
+    .pin-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:24px;width:min(100%,340px);box-shadow:var(--shadow)}
+    .pin-card h3{margin-bottom:14px}
+    .pin-card input{text-align:center;font-size:22px;letter-spacing:.4em;font-weight:700}
+    .pin-err{color:var(--danger);font-size:13px;font-weight:700;min-height:20px;margin-top:10px;text-align:center}
+    .pin-card .button-row{margin-top:6px}
+    a.resource-card{text-decoration:none;display:block;color:inherit}
+    .res-link-btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;font-size:11px;font-weight:700;padding:6px 10px;margin-top:10px;color:var(--accent-deep);display:inline-block}
+    .res-hint{background:var(--soft-2);border-radius:var(--radius-md);padding:10px 14px;font-size:12px;font-weight:700;color:var(--accent-deep);margin:0 0 14px}
+    .res-modal .pin-card input{text-align:left;font-size:15px;letter-spacing:0;font-weight:400;margin-bottom:4px}
+    .res-modal .pin-card label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin:10px 0 4px;text-align:left}
+    .res-modal .pin-card .button-row{grid-template-columns:1fr 1fr 1fr;gap:8px}
+    .res-modal .pin-card .button-row .primary,.res-modal .pin-card .button-row .secondary{padding:13px 8px;font-size:13px}
+    #editBar{position:fixed;z-index:55;left:50%;bottom:78px;transform:translateX(-50%);display:flex;gap:8px;align-items:center}
+    #publishPill{border:0;background:var(--accent);color:#fff;border-radius:999px;padding:14px 26px;font-weight:800;box-shadow:0 10px 30px rgba(63,39,29,.3)}
+    #publishPill:hover{background:var(--accent-deep)}
+    .edit-exit{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:14px 20px;font-weight:700;box-shadow:0 10px 30px rgba(63,39,29,.18)}
+    #session{padding-bottom:150px}#session .session-banner{min-height:155px}#session .exercise-list li{padding:9px 0}#session .notice{font-size:11px;padding:11px 13px}#session>.primary{margin-top:10px!important}
+    .hidden{display:none!important}.center{text-align:center}.muted{color:var(--muted)}
+    @media(max-width:360px){.screen{padding-left:16px;padding-right:16px}.quick-grid{grid-template-columns:1fr}.choice-grid{grid-template-columns:1fr}h1{font-size:36px}.prototype{max-width:165px}}
+    @media(min-width:700px){body{padding:28px 0}.app{min-height:calc(100vh - 56px);border-radius:34px}.screen{min-height:calc(100vh - 56px)}.bottom-nav{bottom:28px;border-radius:0 0 34px 34px}.toast{bottom:120px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.screen{animation:none}.breath-orb.active{animation:none;transform:scale(.86)}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <section class="screen active" id="onboarding">
+    <div class="topline">
+      <div class="lang-toggle" aria-label="Language">
+        <button class="lang active" data-lang="en">EN</button><button class="lang" data-lang="fr">FR</button>
+      </div>
+      <div class="prototype" data-i18n="prototype">Clickable prototype · Illustrative wellness content</div>
+    </div>
+    <div class="progress"><span id="onboardProgress" style="width:33%"></span></div>
+    <div class="form-step active" data-step="1">
+      <div class="eyebrow" data-i18n="welcomeTag">A gentle place to land</div>
+      <h1 data-i18n="welcomeTitle">Care for you, in the moments between.</h1>
+      <p data-i18n="welcomeCopy">Mon Village by Empowered Maman is a calm postpartum companion for body check-ins, short movement, and a little breathing room—day or night.</p>
+      <div class="notice" data-i18n="welcomeBoundary">Wellness and educational support only—not a medical device, therapy, diagnosis, emergency care, or a replacement for your clinician.</div>
+      <div class="onboard-art" aria-hidden="true"><div class="mother"><i class="head"></i><i class="face"></i><i class="body"></i><i class="baby"></i><i class="arm"></i></div></div>
+      <button class="primary" data-next="2"><span data-i18n="begin">Begin</span><span aria-hidden="true">→</span></button>
+    </div>
+    <div class="form-step" data-step="2">
+      <div class="eyebrow" data-i18n="aboutYou">About you</div>
+      <h2 data-i18n="meetTitle">Let’s meet where you are today.</h2>
+      <div class="field"><label for="name" data-i18n="nameLabel">Your first name</label><input id="name" type="text" autocomplete="given-name" placeholder="e.g. Maya" /></div>
+      <div class="field"><label for="stage" data-i18n="stageLabel">Baby’s age / postpartum stage</label><select id="stage"><option value="0-6" data-i18n="stage1">0–6 weeks</option><option value="7-12" data-i18n="stage2">7–12 weeks</option><option value="3-6" data-i18n="stage3">3–6 months</option><option value="6plus" data-i18n="stage4">6+ months</option><option value="pregnant" data-i18n="stage5">Pregnant / preparing</option></select></div>
+      <div class="field"><span class="label" data-i18n="birthLabel">Birth experience</span><div class="choice-grid" id="birthChoices"><button class="choice selected" data-value="vaginal" data-i18n="birth1">Vaginal</button><button class="choice" data-value="cesarean" data-i18n="birth2">Cesarean</button><button class="choice" data-value="assisted" data-i18n="birth3">Assisted</button><button class="choice" data-value="prefer" data-i18n="birth4">Prefer not to say</button></div></div>
+      <button class="primary" data-next="3"><span data-i18n="continue">Continue</span><span aria-hidden="true">→</span></button>
+    </div>
+    <div class="form-step" data-step="3">
+      <div class="eyebrow" data-i18n="supportSettings">Support settings</div><h2 data-i18n="settingsTitle">Make support feel familiar.</h2>
+      <div class="field"><span class="label" data-i18n="languageLabel">Preferred language</span><div class="choice-grid" id="languageChoices"><button class="choice selected" data-value="en">English</button><button class="choice" data-value="fr">Français</button></div></div>
+      <div class="field"><label for="country" data-i18n="countryLabel">Country for urgent resources</label><select id="country"><option value="US">United States</option><option value="FR">France</option><option value="CA">Canada</option><option value="UK">United Kingdom</option><option value="OTHER" data-i18n="otherCountry">Other country</option></select></div>
+      <div class="notice" data-i18n="boundary">Wellness support only. This prototype does not provide therapy, diagnosis, emergency care, or replace your clinician.</div>
+      <button class="primary" id="finishOnboard" style="margin-top:22px"><span data-i18n="enter">Enter your village</span><span aria-hidden="true">→</span></button>
+    </div>
+  </section>
+
+  <section class="screen" id="home">
+    <div class="topline"><div class="prototype" data-i18n="prototype">Clickable prototype · Illustrative wellness content</div><div style="display:flex;align-items:center;gap:2px"><button class="edit-pen editPenBtn" id="editPen" aria-label="Edit text">✎</button><div class="lang-toggle"><button class="lang active" data-lang="en">EN</button><button class="lang" data-lang="fr">FR</button></div></div></div>
+    <div class="home-head"><div><h2 class="hello" id="hello">Good afternoon</h2><div class="date" id="todayLabel"></div></div><div class="avatar" id="avatar">M</div></div>
+    <div class="card hero-card"><div class="eyebrow" style="color:#f7d6cd" data-i18n="dailyCare">Today’s care</div><h3 data-i18n="checkTitle">How are you, really?</h3><p data-i18n="checkCopy">A 60-second check-in helps shape movement and support for today.</p><button class="primary" data-go="checkin" data-i18n="checkCta">Check in now</button></div>
+    <div class="eyebrow" style="margin:26px 2px 8px" data-i18n="needsEyebrow">Your village responds</div>
+    <h3 style="margin-bottom:10px" data-i18n="needsTitle">What do you need right now?</h3>
+    <div id="needList"></div>
+    <button class="text-btn" data-go="chat" style="width:100%;margin-top:10px" data-i18n="notSure">Not sure? Talk with Mon Village →</button>
+    <button class="home-cta plan-card" data-go="plan"><span class="nicon" aria-hidden="true">▤</span><span><strong data-i18n="planCardT">My care plan</strong><small data-i18n="planCardS">Your village, on one page</small></span><span class="chev" aria-hidden="true">›</span></button>
+    <div class="section-label"><h3 data-i18n="gentleMoments">Gentle moments</h3><span data-i18n="chooseNeed">Choose what you need</span></div>
+    <div class="quick-grid">
+      <button class="quick" data-go="session"><span class="icon">◯</span><strong data-i18n="moveTitle">Move with care</strong><small data-i18n="moveSub">10–15 min recovery</small></button>
+      <button class="quick" data-go="breathe"><span class="icon">~</span><strong data-i18n="breatheTitle">Breathe with me</strong><small data-i18n="breatheSub">2 min nervous-system pause</small></button>
+      <button class="quick" data-go="journal"><span class="icon">⌁</span><strong data-i18n="journalTitle">A quiet page</strong><small data-i18n="journalSub">Guided reflection</small></button>
+      <button class="quick" data-go="epds"><span class="icon">+</span><strong data-i18n="epdsTitle">Mood self-screen</strong><small data-i18n="epdsSub">EPDS · about 3 min</small></button>
+    </div>
+    <div class="notice" style="margin-top:22px" data-i18n="redFlags">Heavy bleeding, chest pain, trouble breathing, severe headache, fever, calf pain/swelling, or thoughts of harm need urgent clinical help—not an app.</div>
+  </section>
+
+  <section class="screen" id="checkin">
+    <div class="topline"><button class="back" data-go="home" aria-label="Back">←</button><div class="step-count"><span id="checkStep">1</span> / 6</div></div>
+    <div class="progress"><span id="checkProgress" style="width:20%"></span></div>
+    <div id="checkQuestion"></div>
+  </section>
+
+  <section class="screen" id="recommendation">
+    <div class="topline"><button class="back" data-go="home" aria-label="Back">←</button><div class="prototype" data-i18n="todaysPlan">Today’s gentle plan</div></div>
+    <div class="result-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.3-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.7-7 10-7 10Z"/></svg></div>
+    <div class="eyebrow" data-i18n="heard">I hear you</div><h2 id="recTitle">Today calls for less effort, more support.</h2>
+    <div class="rec-reason"><p id="recReason"></p></div>
+    <div class="session-banner"><div><div class="eyebrow" style="color:white" id="recDuration">10 MINUTES</div><h3 id="recSessionTitle">Restorative reset</h3><p id="recSessionSub">Floor-based · baby nearby · no equipment</p></div></div>
+    <div class="tags"><span class="tag" data-i18n="gentleTag">Gentle pace</span><span class="tag" data-i18n="breathTag">Breath-led</span><span class="tag" data-i18n="adaptTag">Easy to pause</span></div>
+    <div id="recCrisis"></div>
+    <button class="primary" id="recStartBtn" data-go="player" style="margin-top:22px" data-i18n="startSession">Start this session</button>
+    <button class="text-btn" data-go="chat" style="width:100%;margin-top:5px" data-i18n="talkFirst">I’d rather talk first</button>
+  </section>
+
+  <section class="screen" id="session">
+    <div class="topline"><button class="back" data-go="home">←</button><div class="prototype" data-i18n="programLibrary">Restore program</div></div>
+    <div class="eyebrow" data-i18n="programEyebrow">Your restore program</div>
+    <h2 data-i18n="programTitle">Rebuild week by week.</h2>
+    <p data-i18n="programIntro">Real videos from Amandine's postnatal program, organised by week. Pick by time, intensity or topic — or play the full series.</p>
+    <div class="eyebrow" style="margin:22px 2px 10px" data-i18n="myWeek">My week postpartum</div>
+    <div class="chips" id="weekPills" style="border:0;padding-top:0"></div>
+    <div id="programPhases" style="margin-top:16px"></div>
+    <div class="notice" style="margin-top:18px" data-i18n="movementBoundary">Stop with pain, pressure/heaviness, bulging, dizziness, bleeding that increases, or leaking that worries you. Contact your pelvic-health clinician for assessment.</div>
+  </section>
+
+  <section class="screen" id="player">
+    <div class="topline"><button class="back" data-go="session">←</button><div class="step-count" id="exerciseCount">1 / 4</div></div>
+    <div class="player"><div class="eyebrow" data-i18n="nowMoving">Now moving</div><div class="player-orb"><strong id="playerExercise">360° rib breathing</strong></div><div class="time" id="playerTime">02:00</div><p id="playerCue" data-i18n="cue1">Let the back and sides of your ribs widen. Nothing to force.</p>
+      <div class="timeline"><span id="playerProgress"></span></div>
+      <div class="player-controls"><button class="round" id="restartExercise" aria-label="Restart">↺</button><button class="round main" id="playPause" aria-label="Play">▶</button><button class="round" id="nextExercise" aria-label="Next">→</button></div>
+      <p class="safety-note" data-i18n="playerSafety">Illustrative movement only. Pause whenever you need. Seek clinical guidance before returning to exercise after complications or if symptoms are present.</p>
+    </div>
+  </section>
+
+  <section class="screen" id="chat">
+    <div class="chat-wrap"><div class="chat-head"><div class="chat-presence">◌</div><div><h3 data-i18n="concierge">Mon Village</h3><p data-i18n="chatStatus">Scripted wellness guidance · available anytime</p></div></div>
+      <div class="messages" id="messages"></div><div class="chips" id="chatChips"></div>
+      <form class="chat-input" id="chatForm" autocomplete="off"><input id="chatText" type="text" maxlength="500" aria-label="Message" /><button type="submit" aria-label="Send">↑</button></form>
+    </div>
+  </section>
+
+  <section class="screen" id="epds">
+    <div class="topline"><button class="back" data-go="home">←</button><div class="prototype">EPDS · 10 <span data-i18n="items">items</span></div></div>
+    <div id="epdsIntro" class="epds-intro"><div class="eyebrow" data-i18n="selfScreen">Self-screen, not diagnosis</div><h2 data-i18n="epdsHead">A private check on how you’ve felt.</h2><p data-i18n="epdsBody">The Edinburgh Postnatal Depression Scale asks about the past 7 days. Choose the answer closest to how you have felt—not how you think you should feel.</p><ul><li data-i18n="epdsPoint1">Your score is guidance, never a diagnosis.</li><li data-i18n="epdsPoint2">Any concern matters, whatever the number.</li><li data-i18n="epdsPoint3">A harm-related answer always opens immediate support.</li></ul><button class="primary" id="startEpds" data-i18n="startScreen">Start self-screen</button></div>
+    <div id="epdsQuiz" class="hidden"><div class="progress"><span id="epdsProgress"></span></div><div class="step-count" style="margin-bottom:18px"><span id="epdsStep">1</span> / 10</div><div id="epdsQuestion"></div></div>
+    <div id="epdsResult" class="epds-result hidden"></div>
+  </section>
+
+  <section class="screen" id="breathe">
+    <div class="topline"><button class="back" data-go="home">←</button><div class="prototype" data-i18n="twoMinute">2-minute reset</div></div>
+    <div class="breath-stage"><div class="eyebrow" data-i18n="makeSpace">Make a little space</div><h2 data-i18n="breathHead">Nothing to fix. Just this breath.</h2><p class="breath-help" data-i18n="breathBody">Inhale gently for 4, pause for 4, then exhale for 6. Skip the hold if it feels uncomfortable.</p><div class="breath-orb" id="breathOrb"><strong id="breathPhase" data-i18n="ready">Ready</strong></div><div class="breath-count" id="breathTime">02:00</div><div class="breath-actions"><button class="primary" id="breathStart" data-i18n="startBreathing">Start breathing</button><button class="secondary" id="breathReset" aria-label="Reset">↺</button></div></div>
+  </section>
+
+  <section class="screen" id="journal">
+    <div class="topline"><button class="back" data-go="home">←</button><div class="prototype" data-i18n="privateMoment">A private moment</div></div>
+    <div class="eyebrow" data-i18n="todayPrompt">Today’s prompt</div><div class="journal-card"><blockquote data-i18n="prompt">What do I need someone to understand about today?</blockquote></div><p data-i18n="journalHelp">No polishing. A sentence is enough. This entry stays only in this open page unless you copy or download it.</p><label for="journalText" data-i18n="writeHere">Write here</label><textarea id="journalText" data-i18n-placeholder="journalPlaceholder" placeholder="Today feels…"></textarea><div class="button-row"><button class="secondary" id="copyJournal" data-i18n="copy">Copy</button><button class="primary" id="downloadJournal" data-i18n="download">Download note</button></div>
+  </section>
+
+  <section class="screen" id="care">
+    <div class="topline"><div><div class="eyebrow" data-i18n="careSafety">Care & safety</div><h2 data-i18n="knowWhen">Know when to reach out.</h2></div></div>
+    <div class="level"><h3><span aria-hidden="true">🟢</span> <span data-i18n="lvlGreenT">Everyday support</span></h3><p data-i18n="lvlGreenB">The app can help with:</p><ul><li data-i18n="green1">Recovery</li><li data-i18n="green2">Movement</li><li data-i18n="green3">Breathing</li><li data-i18n="green4">Sleep</li><li data-i18n="green5">Feeding guidance</li><li data-i18n="green6">Organization</li><li data-i18n="green7">Resources</li></ul></div>
+    <div class="level orange"><h3><span aria-hidden="true">🟠</span> <span data-i18n="lvlOrangeT">Please contact your healthcare provider</span></h3><ul><li data-i18n="orange1">Persistent symptoms</li><li data-i18n="orange2">Significant anxiety</li><li data-i18n="orange3">Worsening mood</li><li data-i18n="orange4">Unusual pain</li><li data-i18n="orange5">Difficulty functioning</li><li data-i18n="orange6">Symptoms needing medical assessment</li></ul><button class="secondary" data-crisis="medical" data-i18n="showUrgent">Show urgent contacts</button></div>
+    <div class="level red"><h3><span aria-hidden="true">🔴</span> <span data-i18n="lvlRedT">This needs immediate help</span></h3><p data-i18n="lvlRedB">This can be a medical emergency. Contact emergency services now.</p><div id="careRedCrisis"></div></div>
+    <div class="card"><h3 data-i18n="scopeTitle">What this companion can—and cannot—do</h3><p data-i18n="scopeBody">It can offer education, reflection and gentle wellness practices. It cannot assess your body, diagnose a condition, provide therapy, prescribe treatment, or manage an emergency.</p></div>
+    <div id="careCrisis"></div>
+  </section>
+
+  <section class="screen" id="need">
+    <div class="topline"><div style="display:flex;align-items:center;gap:2px"><button class="back" data-go="home" aria-label="Back">←</button><button class="edit-pen editPenBtn" id="editPenNeed" aria-label="Edit text">✎</button></div><div class="prototype" data-i18n="needsEyebrow">Your village responds</div></div>
+    <div class="res-hint hidden" id="resHint" data-i18n="editHintRes">Tap text to edit · Tap 🔗 on a resource to add a link</div>
+    <div class="eyebrow" data-i18n="villageEyebrow">Your village</div>
+    <h2 id="needTitle"></h2>
+    <div id="needBody"></div>
+    <button class="text-btn" data-go="home" style="width:100%;margin-top:14px" data-i18n="backToNeeds">All needs</button>
+  </section>
+
+  <section class="screen" id="plan">
+    <div class="topline"><button class="back" data-go="home" aria-label="Back">←</button><div class="prototype" data-i18n="planTag">My village, on one page</div></div>
+    <div class="eyebrow" data-i18n="planEyebrow">Postpartum care plan</div>
+    <h2 data-i18n="planTitle">My care plan</h2>
+    <div id="planFormWrap">
+      <div class="eyebrow" style="margin:20px 2px 10px" data-i18n="planBefore">Before baby arrives</div>
+      <div class="field"><label for="plan_f1" data-i18n="planF1">Support person</label><input id="plan_f1" type="text" autocomplete="off" /></div>
+      <div class="field"><label for="plan_f2" data-i18n="planF2">Who can come at night</label><input id="plan_f2" type="text" autocomplete="off" /></div>
+      <div class="field"><label for="plan_f3" data-i18n="planF3">Who can bring food</label><input id="plan_f3" type="text" autocomplete="off" /></div>
+      <div class="field"><label for="plan_f4" data-i18n="planF4">Who can watch older siblings</label><input id="plan_f4" type="text" autocomplete="off" /></div>
+      <div class="field"><label for="plan_f5" data-i18n="planF5">My OB / midwife</label><input id="plan_f5" type="text" autocomplete="off" /></div>
+      <div class="field"><label for="plan_f6" data-i18n="planF6">My pediatrician</label><input id="plan_f6" type="text" autocomplete="off" /></div>
+      <div class="field"><label for="plan_f7" data-i18n="planF7">Insurance</label><input id="plan_f7" type="text" autocomplete="off" /></div>
+      <div class="field"><label for="plan_f8" data-i18n="planF8">Mental-health resources available to me</label><input id="plan_f8" type="text" autocomplete="off" /></div>
+      <div class="eyebrow" style="margin:24px 2px 10px" data-i18n="planPartnerT">If I’m not doing well, I want my partner to…</div>
+      <div class="choice-grid" id="planChecks">
+        <button class="choice" data-pk="planP1" data-i18n="planP1">Call my doctor</button>
+        <button class="choice" data-pk="planP2" data-i18n="planP2">Stay with me</button>
+        <button class="choice" data-pk="planP3" data-i18n="planP3">Call my mother</button>
+        <button class="choice" data-pk="planP4" data-i18n="planP4">Take over baby care</button>
+        <button class="choice" data-pk="planP5" data-i18n="planP5">Help me get medical attention</button>
+      </div>
+      <button class="primary" id="planSave" style="margin-top:24px" data-i18n="planSave">Save my plan</button>
+    </div>
+    <div id="planSummaryWrap" class="hidden">
+      <div class="card"><div class="eyebrow" data-i18n="planSummaryT">My village, on one page</div><div id="planSummary"></div></div>
+      <div class="button-row"><button class="secondary" id="planEdit" data-i18n="planEdit">Edit</button><button class="primary" id="planCopy" data-i18n="planCopy">Copy plan</button></div>
+    </div>
+  </section>
+
+  <nav class="bottom-nav" id="bottomNav" aria-label="Primary navigation">
+    <button class="nav-btn active" data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 11 9-8 9 8v9H6v-9"/><path d="M10 20v-6h4v6"/></svg><span data-i18n="navHome">Home</span></button>
+    <button class="nav-btn" data-go="chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a8 8 0 0 1-9 8 9 9 0 0 1-4-.9L3 21l1.8-4A8 8 0 1 1 21 12Z"/></svg><span data-i18n="navChat">Ask</span></button>
+    <button class="nav-btn" data-go="session"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 20c2-3 2-6 0-9s0-6 3-7m7 16c-2-3-2-6 0-9s0-6-3-7M5 8h14M4 20h16"/></svg><span data-i18n="navMove">Move</span></button>
+    <button class="nav-btn" data-go="care"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.3-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.7-7 10-7 10Z"/></svg><span data-i18n="navCare">Care</span></button>
+  </nav>
+  <div class="toast" id="toast"></div>
+  <div class="pin-modal hidden" id="pinModal" role="dialog" aria-modal="true"><div class="pin-card"><h3 data-i18n="pinTitle">Enter your edit PIN</h3><input id="pinInput" type="password" inputmode="numeric" autocomplete="off" maxlength="12" data-i18n-placeholder="pinPlaceholder" placeholder="4-digit PIN" /><div class="pin-err" id="pinErr"></div><div class="button-row"><button class="secondary" id="pinCancel" data-i18n="pinCancel">Cancel</button><button class="primary" id="pinOk" data-i18n="pinOk">Edit</button></div></div></div>
+  <div class="pin-modal res-modal hidden" id="resModal" role="dialog" aria-modal="true"><div class="pin-card"><h3 data-i18n="resDialogTitle">Add a resource</h3><label data-i18n="resLabel">Name</label><input id="resName" type="text" maxlength="120" autocomplete="off" /><label data-i18n="resNote">Description</label><input id="resNote" type="text" maxlength="200" autocomplete="off" /><label data-i18n="resUrl">Link (https://…)</label><input id="resUrl" type="url" inputmode="url" autocomplete="off" placeholder="https://" /><div class="button-row"><button class="secondary" id="resCancel" data-i18n="resCancel">Cancel</button><button class="secondary" id="resReset" data-i18n="resReset">Reset to coming soon</button><button class="primary" id="resSave" data-i18n="resSave">Save</button></div></div></div>
+  <div id="editBar" class="hidden"><button class="edit-exit" id="exitEditBtn" data-i18n="exitEdit">Done</button><button id="publishPill" data-i18n="publish">Publish ✓</button></div>
+</div>
+<script>
+(function(){
+  var state={lang:'en',name:'',birth:'vaginal',country:'US',check:{},rec:'rest',player:{index:0,remaining:120,running:false,timer:null},breath:{remaining:120,running:false,timer:null},epds:{index:0,answers:[]},needId:null,triageOpen:false,editing:false,editPin:null,overrides:{}};
+  var T={
+    en:{prototype:'Clickable prototype · Illustrative wellness content',welcomeTag:'A gentle place to land',welcomeTitle:'Care for you, in the moments between.',welcomeCopy:'Mon Village by Empowered Maman is a calm postpartum companion for body check-ins, short movement, and a little breathing room—day or night.',welcomeBoundary:'Wellness and educational support only—not a medical device, therapy, diagnosis, emergency care, or a replacement for your clinician.',begin:'Begin',aboutYou:'About you',meetTitle:'Let’s meet where you are today.',nameLabel:'Your first name',stageLabel:'Baby’s age / postpartum stage',stage1:'0–6 weeks',stage2:'7–12 weeks',stage3:'3–6 months',stage4:'6+ months',stage5:'Pregnant / preparing',birthLabel:'Birth experience',birth1:'Vaginal',birth2:'Cesarean',birth3:'Assisted',birth4:'Prefer not to say',continue:'Continue',supportSettings:'Support settings',settingsTitle:'Make support feel familiar.',languageLabel:'Preferred language',countryLabel:'Country for urgent resources',otherCountry:'Other country',boundary:'Wellness support only. This prototype does not provide therapy, diagnosis, emergency care, or replace your clinician.',enter:'Enter your village',dailyCare:'Today’s care',checkTitle:'How are you, really?',checkCopy:'A 60-second check-in helps shape movement and support for today.',checkCta:'Check in now',gentleMoments:'Gentle moments',chooseNeed:'Choose what you need',moveTitle:'Move with care',moveSub:'10–15 min recovery',breatheTitle:'Breathe with me',breatheSub:'2 min nervous-system pause',journalTitle:'A quiet page',journalSub:'Guided reflection',epdsTitle:'Mood self-screen',epdsSub:'EPDS · about 3 min',redFlags:'Heavy bleeding, chest pain, trouble breathing, severe headache, fever, calf pain/swelling, or thoughts of harm need urgent clinical help—not an app.',todaysPlan:'Today’s gentle plan',heard:'I hear you',gentleTag:'Gentle pace',breathTag:'Breath-led',adaptTag:'Easy to pause',startSession:'Start this session',talkFirst:'I’d rather talk first',sessionLibrary:'Recovery library',selectedForYou:'Selected for today',sessionIntro:'Move slowly and stay below any pain. Your breath—not the timer—sets the pace.',sessionName:'Reconnect & restore',sessionMeta:'Postpartum Pilates · no equipment',ex1:'360° rib breathing',ex1d:'Supported side-lying · 2 min',ex2:'Heel slides with exhale',ex2d:'Slow alternating sides · 3 min',ex3:'Bridge preparation',ex3d:'Pelvic floor release first · 3 min',ex4:'Resting body scan',ex4d:'Feet up, jaw soft · 4 min',movementBoundary:'Stop with pain, pressure/heaviness, bulging, dizziness, bleeding that increases, or leaking that worries you. Contact your pelvic-health clinician for assessment.',begin12:'Begin 12-minute session',nowMoving:'Now moving',cue1:'Let the back and sides of your ribs widen. Nothing to force.',playerSafety:'Illustrative movement only. Pause whenever you need. Seek clinical guidance before returning to exercise after complications or if symptoms are present.',concierge:'Mon Village',chatStatus:'Scripted wellness guidance · available anytime',items:'items',selfScreen:'Self-screen, not diagnosis',epdsHead:'A private check on how you’ve felt.',epdsBody:'The Edinburgh Postnatal Depression Scale asks about the past 7 days. Choose the answer closest to how you have felt—not how you think you should feel.',epdsPoint1:'Your score is guidance, never a diagnosis.',epdsPoint2:'Any concern matters, whatever the number.',epdsPoint3:'A harm-related answer always opens immediate support.',startScreen:'Start self-screen',twoMinute:'2-minute reset',makeSpace:'Make a little space',breathHead:'Nothing to fix. Just this breath.',breathBody:'Inhale gently for 4, pause for 4, then exhale for 6. Skip the hold if it feels uncomfortable.',ready:'Ready',startBreathing:'Start breathing',privateMoment:'A private moment',todayPrompt:'Today’s prompt',prompt:'What do I need someone to understand about today?',journalHelp:'No polishing. A sentence is enough. This entry stays only in this open page unless you copy or download it.',writeHere:'Write here',journalPlaceholder:'Today feels…',copy:'Copy',download:'Download note',careSafety:'Care & safety',knowWhen:'Know when to reach out.',urgentTitle:'Get urgent medical help now',urgentBody:'Heavy or sudden bleeding, chest pain, trouble breathing, seizures, fainting, severe headache with vision changes, fever with feeling very unwell, or one-sided calf swelling/pain.',showUrgent:'Show urgent contacts',bookTitle:'Book a clinician check',bookBody:'New or increasing pelvic pressure/bulging, wound concerns, persistent pain, painful feeding, incontinence that worries you, or low mood/anxiety affecting daily life.',scopeTitle:'What this companion can—and cannot—do',scopeBody:'It can offer education, reflection and gentle wellness practices. It cannot assess your body, diagnose a condition, provide therapy, prescribe treatment, or manage an emergency.',navHome:'Home',navChat:'Ask',navMove:'Move',navCare:'Care',needsEyebrow:'Your village responds',needsTitle:'What do you need right now?',villageEyebrow:'Your village',rightNow:'Right now',whoCanHelp:'People who can help',comingSoon:"Coming soon — Amandine's picks",backToNeeds:'All needs',editBtn:'Edit text',pinTitle:'Enter your edit PIN',pinPlaceholder:'4-digit PIN',pinOk:'Edit',pinCancel:'Cancel',wrongPin:'Wrong PIN — try again',publish:'Publish ✓',published:'Live — your changes are on the site',exitEdit:'Done',triageTitle:'I don’t know — just help me',triageSub:'We’ll figure it out together',triageEyebrow:'A gentle triage',triageHead:'What’s happening?',triBody:'My body',triBaby:'My baby',triEmo:'My emotions',triSleep:'I can’t sleep',triScared:'I’m scared',triSomeone:'I need someone',triIdk:'I don’t know',lvlGreenT:'Everyday support',lvlGreenB:'The app can help with:',green1:'Recovery',green2:'Movement',green3:'Breathing',green4:'Sleep',green5:'Feeding guidance',green6:'Organization',green7:'Resources',lvlOrangeT:'Please contact your healthcare provider',orange1:'Persistent symptoms',orange2:'Significant anxiety',orange3:'Worsening mood',orange4:'Unusual pain',orange5:'Difficulty functioning',orange6:'Symptoms needing medical assessment',lvlRedT:'This needs immediate help',lvlRedB:'This can be a medical emergency. Contact emergency services now.',planTag:'My village, on one page',planEyebrow:'Postpartum care plan',planTitle:'My care plan',planCardT:'My care plan',planCardS:'Your village, on one page',planBefore:'Before baby arrives',planF1:'Support person',planF2:'Who can come at night',planF3:'Who can bring food',planF4:'Who can watch older siblings',planF5:'My OB / midwife',planF6:'My pediatrician',planF7:'Insurance',planF8:'Mental-health resources available to me',planPartnerT:'If I’m not doing well, I want my partner to…',planP1:'Call my doctor',planP2:'Stay with me',planP3:'Call my mother',planP4:'Take over baby care',planP5:'Help me get medical attention',planSave:'Save my plan',planSaved:'Plan saved — your village, on one page.',planCopy:'Copy plan',planCopied:'Plan copied.',planCopyFail:'Copy isn’t available here.',planEdit:'Edit',planEmpty:'Nothing filled in yet — your plan will appear here.',planSummaryT:'My village, on one page',tileBody:'My body',tileBaby:'My baby',tileEmotions:'My emotions',tileSleep:'I can’t sleep',tileScared:'I’m scared',tileHelp:'I need help',tileIdk:'I don’t know',seeAllNeeds:'See all needs',relatedTitle:'Related',resDialogTitle:'Add a resource',resLabel:'Name',resNote:'Description',resUrl:'Link (https://…)',resSave:'Save',resReset:'Reset to coming soon',resCancel:'Cancel',editHintRes:'Tap text to edit · Tap 🔗 on a resource to add a link',gBody:'My body',gBaby:'My baby',gEmo:'My emotions',gRest:'Rest',notSure:'Not sure? Talk with Mon Village →',programLibrary:'Restore program',programEyebrow:'Your restore program',programTitle:'Rebuild week by week.',programIntro:"Real videos from Amandine's postnatal program, organised by week. Pick by time, intensity or topic — or play the full series.",myWeek:'My week postpartum',youAreHere:'You are here',playSeries:'▶ Play full series',weekSaved:'Program set for your week ✓'},
+    fr:{prototype:'Prototype cliquable · Contenu bien-être illustratif',welcomeTag:'Un espace tout en douceur',welcomeTitle:'Prendre soin de vous, entre deux moments.',welcomeCopy:'Mon Village par Empowered Maman est un compagnon post-partum apaisant pour écouter votre corps, bouger doucement et respirer—jour et nuit.',welcomeBoundary:'Soutien bien-être et éducatif uniquement—ceci n’est pas un dispositif médical, une thérapie, un diagnostic, des soins d’urgence ni un remplacement de votre professionnel de santé.',begin:'Commencer',aboutYou:'À propos de vous',meetTitle:'Partons de là où vous en êtes aujourd’hui.',nameLabel:'Votre prénom',stageLabel:'Âge du bébé / étape post-partum',stage1:'0–6 semaines',stage2:'7–12 semaines',stage3:'3–6 mois',stage4:'6 mois et +',stage5:'Enceinte / en préparation',birthLabel:'Type d’accouchement',birth1:'Voie basse',birth2:'Césarienne',birth3:'Instrumental',birth4:'Je préfère ne pas dire',continue:'Continuer',supportSettings:'Vos préférences',settingsTitle:'Un soutien qui vous ressemble.',languageLabel:'Langue préférée',countryLabel:'Pays pour les ressources urgentes',otherCountry:'Autre pays',boundary:'Soutien bien-être uniquement. Ce prototype ne fournit ni thérapie, ni diagnostic, ni soins d’urgence et ne remplace pas un professionnel de santé.',enter:'Entrer dans mon village',dailyCare:'Votre soin du jour',checkTitle:'Comment allez-vous, vraiment ?',checkCopy:'Un bilan de 60 secondes adapte le mouvement et le soutien à votre journée.',checkCta:'Faire mon bilan',gentleMoments:'Moments de douceur',chooseNeed:'Choisissez votre besoin',moveTitle:'Bouger en douceur',moveSub:'Récupération · 10–15 min',breatheTitle:'Respirer avec moi',breatheSub:'Pause nerveuse · 2 min',journalTitle:'Une page pour soi',journalSub:'Réflexion guidée',epdsTitle:'Auto-évaluation humeur',epdsSub:'EPDS · environ 3 min',redFlags:'Saignement abondant, douleur thoracique, difficulté à respirer, mal de tête intense, fièvre, douleur/gonflement du mollet ou pensées d’automutilation nécessitent une aide clinique urgente—pas une appli.',todaysPlan:'Votre programme doux',heard:'Je vous entends',gentleTag:'Rythme doux',breathTag:'Guidé par le souffle',adaptTag:'Facile à interrompre',startSession:'Commencer cette séance',talkFirst:'Je préfère parler d’abord',sessionLibrary:'Bibliothèque récupération',selectedForYou:'Choisie pour aujourd’hui',sessionIntro:'Bougez lentement, sans entrer dans la douleur. Votre souffle—not le chrono—donne le rythme.',sessionName:'Reconnecter & restaurer',sessionMeta:'Pilates post-partum · sans matériel',ex1:'Respiration costale à 360°',ex1d:'Allongée sur le côté · 2 min',ex2:'Glissés de talon en expirant',ex2d:'Alternez lentement · 3 min',ex3:'Préparation du pont',ex3d:'Relâchez le périnée d’abord · 3 min',ex4:'Scan corporel au repos',ex4d:'Pieds surélevés, mâchoire détendue · 4 min',movementBoundary:'Arrêtez en cas de douleur, lourdeur/pression, sensation de boule, vertiges, saignement accru ou fuite préoccupante. Contactez un professionnel de santé pelvienne.',begin12:'Commencer la séance de 12 min',nowMoving:'Mouvement en cours',cue1:'Laissez l’arrière et les côtés des côtes s’ouvrir. Rien à forcer.',playerSafety:'Mouvement illustratif uniquement. Faites une pause dès que nécessaire. Demandez un avis clinique avant la reprise après des complications ou en présence de symptômes.',concierge:'Mon Village',chatStatus:'Conseils bien-être pré-écrits · disponible à tout moment',items:'questions',selfScreen:'Auto-évaluation, pas un diagnostic',epdsHead:'Un point intime sur votre ressenti.',epdsBody:'L’échelle de dépression postnatale d’Édimbourg porte sur les 7 derniers jours. Choisissez la réponse la plus proche de votre vécu.',epdsPoint1:'Votre score est un repère, jamais un diagnostic.',epdsPoint2:'Toute inquiétude compte, quel que soit le chiffre.',epdsPoint3:'Toute réponse liée à l’automutilation ouvre un soutien immédiat.',startScreen:'Commencer l’auto-évaluation',twoMinute:'Pause de 2 minutes',makeSpace:'Créer un peu d’espace',breathHead:'Rien à réparer. Juste ce souffle.',breathBody:'Inspirez doucement sur 4, pause sur 4, puis expirez sur 6. Sautez la pause si elle est inconfortable.',ready:'Prête',startBreathing:'Commencer à respirer',privateMoment:'Un moment privé',todayPrompt:'Question du jour',prompt:'Qu’aimerais-je que quelqu’un comprenne de ma journée ?',journalHelp:'Pas besoin de bien écrire. Une phrase suffit. Ce texte reste sur cette page, sauf si vous le copiez ou le téléchargez.',writeHere:'Écrire ici',journalPlaceholder:'Aujourd’hui, je me sens…',copy:'Copier',download:'Télécharger la note',careSafety:'Soin & sécurité',knowWhen:'Savoir quand demander de l’aide.',urgentTitle:'Obtenir une aide médicale urgente',urgentBody:'Saignement abondant ou soudain, douleur thoracique, difficulté à respirer, convulsions, évanouissement, mal de tête sévère avec troubles visuels, fièvre avec grand malaise, ou douleur/gonflement d’un seul mollet.',showUrgent:'Voir les contacts urgents',bookTitle:'Prendre rendez-vous',bookBody:'Pression ou sensation de boule pelvienne nouvelle/croissante, souci de cicatrice, douleur persistante, alimentation douloureuse, incontinence préoccupante, ou humeur basse/anxiété qui gêne la vie quotidienne.',scopeTitle:'Ce que ce compagnon peut—et ne peut pas—faire',scopeBody:'Il peut offrir de l’information, de la réflexion et des pratiques douces de bien-être. Il ne peut pas examiner votre corps, diagnostiquer, fournir une thérapie, prescrire ni gérer une urgence.',navHome:'Accueil',navChat:'Parler',navMove:'Bouger',navCare:'Aide',needsEyebrow:'Votre village répond',needsTitle:"De quoi avez-vous besoin ?",villageEyebrow:'Votre village',rightNow:"Pour l'instant",whoCanHelp:'Des personnes pour vous aider',comingSoon:"Bientôt — les adresses d'Amandine",backToNeeds:'Tous les besoins',editBtn:'Modifier le texte',pinTitle:'Entrez votre code',pinPlaceholder:'Code à 4 chiffres',pinOk:'Modifier',pinCancel:'Annuler',wrongPin:'Code incorrect — réessayez',publish:'Publier ✓',published:'En ligne — vos changements sont publiés',exitEdit:'Terminé',triageTitle:'Je ne sais pas — aidez-moi',triageSub:'On va comprendre ensemble',triageEyebrow:'Un tri tout doux',triageHead:'Que se passe-t-il ?',triBody:'Mon corps',triBaby:'Mon bébé',triEmo:'Mes émotions',triSleep:'Je n’arrive pas à dormir',triScared:'J’ai peur',triSomeone:'J’ai besoin de quelqu’un',triIdk:'Je ne sais pas',lvlGreenT:'Soutien du quotidien',lvlGreenB:'L’appli peut aider pour :',green1:'Récupération',green2:'Mouvement',green3:'Respiration',green4:'Sommeil',green5:'Conseils alimentation',green6:'Organisation',green7:'Ressources',lvlOrangeT:'Contactez votre professionnel de santé',orange1:'Symptômes persistants',orange2:'Anxiété importante',orange3:'Humeur qui se dégrade',orange4:'Douleur inhabituelle',orange5:'Difficultés à fonctionner',orange6:'Symptômes nécessitant une évaluation médicale',lvlRedT:'Ceci nécessite une aide immédiate',lvlRedB:'Cela peut être une urgence médicale. Contactez les urgences maintenant.',planTag:'Mon village, sur une page',planEyebrow:'Plan de soins post-partum',planTitle:'Mon plan de soins',planCardT:'Mon plan de soins',planCardS:'Votre village, sur une page',planBefore:'Avant l’arrivée de bébé',planF1:'Personne de confiance',planF2:'Qui peut venir la nuit',planF3:'Qui peut apporter des repas',planF4:'Qui peut garder les aînés',planF5:'Mon gynéco / ma sage-femme',planF6:'Mon pédiatre',planF7:'Mutuelle / assurance',planF8:'Ressources santé mentale à ma disposition',planPartnerT:'Si je ne vais pas bien, je veux que mon partenaire…',planP1:'Appeler mon médecin',planP2:'Rester avec moi',planP3:'Appeler ma mère',planP4:'Prendre le relais pour bébé',planP5:'M’aider à obtenir des soins',planSave:'Enregistrer mon plan',planSaved:'Plan enregistré — votre village, sur une page.',planCopy:'Copier le plan',planCopied:'Plan copié.',planCopyFail:'Copie indisponible ici.',planEdit:'Modifier',planEmpty:'Rien n’est encore rempli — votre plan apparaîtra ici.',planSummaryT:'Mon village, sur une page',tileBody:'Mon corps',tileBaby:'Mon bébé',tileEmotions:'Mes émotions',tileSleep:'Je n’arrive pas à dormir',tileScared:'J’ai peur',tileHelp:'J’ai besoin d’aide',tileIdk:'Je ne sais pas',seeAllNeeds:'Voir tous les besoins',relatedTitle:'Voir aussi',resDialogTitle:'Ajouter une ressource',resLabel:'Nom',resNote:'Description',resUrl:'Lien (https://…)',resSave:'Enregistrer',resReset:'Revenir à « bientôt »',resCancel:'Annuler',editHintRes:'Touchez un texte pour le modifier · Touchez 🔗 pour ajouter un lien',gBody:'Mon corps',gBaby:'Mon bébé',gEmo:'Mes émotions',gRest:'Repos',notSure:'Vous hésitez ? Parlez avec Mon Village →',programLibrary:'Programme de récupération',programEyebrow:'Votre programme de récupération',programTitle:'Reconstruisez semaine après semaine.',programIntro:"Les vraies vidéos du programme postnatal d'Amandine, organisées par semaine. Choisissez selon le temps, l'intensité ou le sujet — ou lisez la série complète.",myWeek:'Ma semaine post-partum',youAreHere:'Vous êtes ici',playSeries:'▶ Lire la série complète',weekSaved:'Programme ajusté à votre semaine ✓'}
+  };
+  var checkData={
+    en:[
+      {q:'How is your body today?',sub:'Pain · bleeding · incision · pelvic symptoms · headaches · swelling · energy',opts:['Struggling','Uncomfortable','Okay','Good']},
+      {q:'How is your mind today?',sub:'Mood · anxiety · intrusive thoughts · overwhelm · disconnection · racing thoughts',opts:['Very low','Fragile','Okay','Steady']},
+      {q:'How did you sleep?',sub:'Total sleep · longest uninterrupted stretch',opts:['Barely','Broken','Some rest','Rested']},
+      {q:'Are the basics covered?',sub:'Eaten · showered · been outside · able to care for yourself',opts:['Not really','Partly','Mostly','Yes']},
+      {q:'Do you feel supported?',sub:'Spoken to someone today · feel supported',opts:['Alone','A little','Somewhat','Yes']},
+      {q:'Does anything feel different or unusual for you?',sub:null,opts:['No',"Yes, but I'm okay",'Yes, and it worries me']}
+    ],
+    fr:[
+      {q:"Comment va votre corps aujourd’hui ?",sub:'Douleur · saignement · cicatrice · symptômes pelviens · maux de tête · gonflement · énergie',opts:['En difficulté','Inconfortable','Ça va','Bien']},
+      {q:'Comment va votre esprit aujourd’hui ?',sub:'Humeur · anxiété · pensées intrusives · débordement · déconnexion · pensées qui s’emballent',opts:['Très bas','Fragile','Ça va','Stable']},
+      {q:'Comment avez-vous dormi ?',sub:'Sommeil total · plus longue période ininterrompue',opts:['À peine','Fragmenté','Un peu reposée','Reposée']},
+      {q:'Les essentiels sont-ils couverts ?',sub:'Mangée · douchée · sortie dehors · capable de prendre soin de vous',opts:['Pas vraiment','En partie','Plutôt','Oui']},
+      {q:'Vous sentez-vous soutenue ?',sub:"Parlé à quelqu’un aujourd’hui · sentiment d’être soutenue",opts:['Seule','Un peu','Plutôt','Oui']},
+      {q:'Quelque chose vous semble-t-il différent ou inhabituel ?',sub:null,opts:['Non','Oui, mais ça va','Oui, et ça m’inquiète']}
+    ]
+  };
+  var chat={
+    en:{welcome:'I’m here. Choose what feels closest, and I’ll offer a clear next step. This is educational wellness support—not clinical care.',chips:[['sleep','I can’t sleep'],['pain','Pain or bleeding'],['feeding','Feeding feels hard'],['heavy','Pelvic heaviness'],['overwhelm','I feel overwhelmed'],['crisis','I feel unsafe']],responses:{sleep:'Broken sleep can make everything feel louder. If you can, protect one rest window today: lie down for 20 minutes while someone else handles one task. If sleeplessness continues even when baby sleeps, or comes with racing thoughts or unusual energy, contact your clinician promptly.',pain:'Pain that is worsening, severe, or paired with heavy bleeding, fever, faintness, chest pain, shortness of breath, or a severe headache needs urgent medical care. For ongoing but non-urgent pain, pause exercise and contact your maternity or pelvic-health clinician.',feeding:'Painful feeding is common—but it is not something you have to simply endure. A midwife, lactation consultant, pediatrician, or feeding specialist can watch a full feed and check both you and baby. Seek prompt care for fever, a hot red breast area, or feeling acutely unwell.',heavy:'Pelvic pressure, heaviness, or a bulging sensation deserves assessment by a pelvic-health physiotherapist or your maternity clinician. Avoid straining and high-impact work until reviewed; stop any movement that increases symptoms.',overwhelm:'For this minute: put both feet down, soften your jaw, and name one thing that can wait. Then choose one person to tell plainly: “I need practical help today.” If low mood, panic, anger, or disconnection is persistent or frightening, contact your provider.'}},
+    fr:{welcome:'Je suis là. Choisissez ce qui vous ressemble le plus, et je proposerai une prochaine étape claire. Soutien bien-être éducatif uniquement—pas des soins cliniques.',chips:[['sleep','Je n’arrive pas à dormir'],['pain','Douleur ou saignement'],['feeding','L’alimentation est difficile'],['heavy','Lourdeur pelvienne'],['overwhelm','Je me sens dépassée'],['crisis','Je ne me sens pas en sécurité']],responses:{sleep:'Le sommeil fragmenté amplifie tout. Si possible, protégez aujourd’hui une fenêtre de repos : allongez-vous 20 minutes pendant qu’une autre personne prend une tâche. Si vous ne dormez pas même quand bébé dort, avec des pensées accélérées ou une énergie inhabituelle, contactez rapidement votre professionnel.',pain:'Une douleur qui augmente ou devient sévère, avec saignement abondant, fièvre, malaise, douleur thoracique, essoufflement ou mal de tête intense nécessite des soins urgents. Pour une douleur persistante non urgente, arrêtez l’exercice et contactez votre maternité ou professionnel pelvien.',feeding:'Une alimentation douloureuse est fréquente—mais vous n’avez pas à la subir. Une sage-femme, consultante en lactation, pédiatre ou spécialiste peut observer un repas complet. Consultez rapidement en cas de fièvre, zone rouge et chaude du sein ou grand malaise.',heavy:'Une pression, lourdeur ou sensation de boule pelvienne mérite une évaluation par un kinésithérapeute pelvien ou votre professionnel de maternité. Évitez les efforts et impacts jusqu’à l’avis ; arrêtez tout mouvement qui augmente les symptômes.',overwhelm:'Pour cette minute : posez les deux pieds, détendez la mâchoire et nommez une chose qui peut attendre. Puis dites clairement à une personne : « J’ai besoin d’aide concrète aujourd’hui. » Si la tristesse, la panique, la colère ou le détachement persistent ou vous effraient, contactez votre professionnel.'}}
+  };
+  var epds={
+    en:[
+      ['I have been able to laugh and see the funny side of things.',[['As much as I always could',0],['Not quite so much now',1],['Definitely not so much now',2],['Not at all',3]]],
+      ['I have looked forward with enjoyment to things.',[['As much as I ever did',0],['Rather less than I used to',1],['Definitely less than I used to',2],['Hardly at all',3]]],
+      ['I have blamed myself unnecessarily when things went wrong.',[['Yes, most of the time',3],['Yes, some of the time',2],['Not very often',1],['No, never',0]]],
+      ['I have been anxious or worried for no good reason.',[['No, not at all',0],['Hardly ever',1],['Yes, sometimes',2],['Yes, very often',3]]],
+      ['I have felt scared or panicky for no very good reason.',[['Yes, quite a lot',3],['Yes, sometimes',2],['No, not much',1],['No, not at all',0]]],
+      ['Things have been getting on top of me.',[['Yes, most of the time I have not been able to cope',3],['Yes, sometimes I have not been coping as well as usual',2],['No, most of the time I have coped quite well',1],['No, I have been coping as well as ever',0]]],
+      ['I have been so unhappy that I have had difficulty sleeping.',[['Yes, most of the time',3],['Yes, sometimes',2],['Not very often',1],['No, not at all',0]]],
+      ['I have felt sad or miserable.',[['Yes, most of the time',3],['Yes, quite often',2],['Not very often',1],['No, not at all',0]]],
+      ['I have been so unhappy that I have been crying.',[['Yes, most of the time',3],['Yes, quite often',2],['Only occasionally',1],['No, never',0]]],
+      ['The thought of harming myself has occurred to me.',[['Yes, quite often',3],['Sometimes',2],['Hardly ever',1],['Never',0]]]
+    ],
+    fr:[
+      ["J’ai pu rire et voir le côté amusant des choses.",[["Autant que d’habitude",0],["Un peu moins maintenant",1],["Beaucoup moins maintenant",2],["Pas du tout",3]]],
+      ["Je me suis réjouie à l’idée de certaines choses.",[["Autant qu’avant",0],["Un peu moins qu’avant",1],["Beaucoup moins qu’avant",2],["Presque pas",3]]],
+      ["Je me suis reproché inutilement que les choses aillent mal.",[["Oui, la plupart du temps",3],["Oui, parfois",2],["Pas très souvent",1],["Non, jamais",0]]],
+      ["J’ai été anxieuse ou inquiète sans raison valable.",[["Non, pas du tout",0],["Presque jamais",1],["Oui, parfois",2],["Oui, très souvent",3]]],
+      ["J’ai eu peur ou paniqué sans raison valable.",[["Oui, beaucoup",3],["Oui, parfois",2],["Non, pas beaucoup",1],["Non, pas du tout",0]]],
+      ["Les choses m’ont dépassée.",[["Oui, la plupart du temps, je n’ai pas pu faire face",3],["Oui, parfois, je me suis moins bien débrouillée",2],["Non, j’ai généralement assez bien fait face",1],["Non, j’ai fait face comme d’habitude",0]]],
+      ["J’ai été si malheureuse que j’ai eu du mal à dormir.",[["Oui, la plupart du temps",3],["Oui, parfois",2],["Pas très souvent",1],["Non, pas du tout",0]]],
+      ["Je me suis sentie triste ou malheureuse.",[["Oui, la plupart du temps",3],["Oui, assez souvent",2],["Pas très souvent",1],["Non, pas du tout",0]]],
+      ["J’ai été si malheureuse que j’ai pleuré.",[["Oui, la plupart du temps",3],["Oui, assez souvent",2],["Seulement parfois",1],["Non, jamais",0]]],
+      ["Il m’est arrivé de penser à me faire du mal.",[["Oui, assez souvent",3],["Parfois",2],["Presque jamais",1],["Jamais",0]]]
+    ]
+  };
+  var NEEDS={
+    en:[
+      {id:'lonely',icon:'♡',title:'I feel lonely',sub:"You don't have to hold this alone",
+        actions:[{label:'Breathe with me',go:'breathe'},{label:'Move with care',go:'session'},{label:'A quiet page',go:'journal'},{label:'Talk with Mon Village',go:'chat'}],
+        help:[{label:'Perinatal therapist directory',note:'Vetted therapists who understand this season'},{label:'Mum community',note:'Phase 2',soon:true}],
+        crisis:null,note:'Loneliness is one of the most common postpartum experiences. Naming it is already a step.'},
+      {id:'anxious',icon:'~',title:'I feel anxious',sub:"Let's soften this together",
+        actions:[{label:'Breathe with me',go:'breathe'},{label:'Move with care',go:'session'},{label:'Talk with Mon Village',go:'chat'}],
+        help:[{label:'Perinatal therapist directory',note:"Support for anxiety that won't settle"}],
+        crisis:'mental',note:null},
+      {id:'low',icon:'☁',title:'I feel low',sub:'Reaching out is the strong move',first:'help',
+        actions:[{label:'A quiet page',go:'journal'},{label:'Talk with Mon Village',go:'chat'},{label:'Mood self-screen',go:'epds'}],
+        help:[{label:'Perinatal therapist directory',note:'Therapists who specialise in the postpartum period'}],
+        crisis:'mental',note:"This companion doesn't diagnose or treat. Reaching out is the strong move."},
+      {id:'recover',icon:'◯',title:'Recover physically',sub:'Rebuild gently, at your pace',
+        actions:[{label:'Move with care',go:'session'},{label:'Breathe with me',go:'breathe'}],
+        help:[{label:'Pelvic-health PT directory',note:'Find a pelvic-health physiotherapist near you',soon:true}],
+        crisis:null,note:null},
+      {id:'exhausted',icon:'☾',title:"I'm exhausted — I need help",sub:'Handing off is allowed',
+        actions:[{label:'Talk with Mon Village',go:'chat'}],
+        help:[{label:'Night nurse directory',note:'',soon:true},{label:'Cleaning help',note:'',soon:true},{label:'Meal catering',note:'',soon:true}],
+        crisis:null,note:'Naming one task to hand off is a good first step.'},
+      {id:'pain',icon:'+',title:"I'm in pain",sub:"Let's find the right next step",
+        actions:[{label:'Breathe with me',go:'breathe'},{label:'Know when to reach out',go:'care'}],
+        help:[{label:'Book a doctor',note:'',soon:true},{label:'PT, video or in-person',note:'',soon:true}],
+        crisis:'medical',note:'Worsening or severe pain needs prompt clinical assessment — not waiting.'},
+      {id:'feeding',icon:'❀',title:'Feeding feels hard',sub:'Support exists for this',
+        actions:[{label:'Talk with Mon Village',go:'chat'}],
+        help:[{label:'IBCLC lactation consultants',note:'Video-call booking',soon:true},{label:'Feeding videos',note:'',soon:true}],
+        crisis:null,note:'Fever, a hot red breast area, or feeling acutely unwell → seek prompt care.'},
+      {id:'baby',icon:'✿',title:'Is my baby ok?',sub:'3am worry is universal',
+        actions:[{label:'Talk with Mon Village',go:'chat'}],
+        help:[{label:'When to call the pediatrician',note:'A clear guide',soon:true},{label:'Nurse hotline numbers',note:'Real humans, day and night'}],
+        crisis:null,note:'Soothing technique videos are coming soon.'},
+      {id:'sleepless',icon:'◐',title:"I can't sleep",sub:'For the wide-awake nights',
+        actions:[{label:'Breathe with me',go:'breathe'},{label:'A quiet page',go:'journal'}],
+        help:[{label:'Sleep audios',note:'',soon:true},{label:'Wind-down routines',note:'',soon:true}],
+        crisis:null,note:"If sleeplessness persists even when baby sleeps, or comes with low mood or racing thoughts, <button class=\"text-btn\" data-go=\"care\" style=\"padding:0;display:inline\">contact your clinician</button>."},
+      {id:'wrong',icon:'!',title:'Something feels physically wrong',sub:'Trust this signal',first:'crisis',urgent:true,
+        actions:[{label:'Know when to reach out',go:'care'}],
+        help:[{label:'Red-flag checklist',note:'Heavy bleeding, severe headache, vision changes, fever, chest pain, trouble breathing → call your doctor or go to ER now.'}],
+        crisis:'medical',note:null},
+      {id:'partner',icon:'✎',title:'Partner strain',sub:'The relationship shift is real',
+        actions:[{label:'A quiet page',go:'journal'},{label:'Talk with Mon Village',go:'chat'}],
+        help:[{label:'Couples therapist directory',note:'',soon:true}],
+        crisis:null,note:'The relationship shift after birth is extremely common — and rarely talked about.'}
+    ],
+    fr:[
+      {id:'lonely',icon:'♡',title:'Je me sens seule',sub:"Vous n'avez pas à porter cela seule",
+        actions:[{label:'Respirer avec moi',go:'breathe'},{label:'Bouger en douceur',go:'session'},{label:'Une page pour soi',go:'journal'},{label:'Parler avec Mon Village',go:'chat'}],
+        help:[{label:'Annuaire de thérapeutes périnataux',note:'Des thérapeutes qui connaissent cette étape'},{label:'Communauté de mamans',note:'Phase 2',soon:true}],
+        crisis:null,note:"La solitude est l'une des expériences post-partum les plus courantes. La nommer est déjà un pas."},
+      {id:'anxious',icon:'~',title:'Je me sens anxieuse',sub:'Adoucissons cela ensemble',
+        actions:[{label:'Respirer avec moi',go:'breathe'},{label:'Bouger en douceur',go:'session'},{label:'Parler avec Mon Village',go:'chat'}],
+        help:[{label:'Annuaire de thérapeutes périnataux',note:"Un soutien quand l'anxiété ne retombe pas"}],
+        crisis:'mental',note:null},
+      {id:'low',icon:'☁',title:'Je me sens déprimée',sub:"Demander de l'aide est un geste fort",first:'help',
+        actions:[{label:'Une page pour soi',go:'journal'},{label:'Parler avec Mon Village',go:'chat'},{label:'Auto-évaluation humeur',go:'epds'}],
+        help:[{label:'Annuaire de thérapeutes périnataux',note:'Spécialistes de la période post-partum'}],
+        crisis:'mental',note:'Ce compagnon ne diagnostique ni ne soigne. Tendre la main est un geste fort.'},
+      {id:'recover',icon:'◯',title:'Récupérer physiquement',sub:'Reconstruisez en douceur, à votre rythme',
+        actions:[{label:'Bouger en douceur',go:'session'},{label:'Respirer avec moi',go:'breathe'}],
+        help:[{label:'Annuaire de kinés périnéaux',note:'Trouvez un kiné spécialisé près de chez vous',soon:true}],
+        crisis:null,note:null},
+      {id:'exhausted',icon:'☾',title:"Épuisée — j'ai besoin d'aide",sub:'Déléguer est permis',
+        actions:[{label:'Parler avec Mon Village',go:'chat'}],
+        help:[{label:'Annuaire de nurses de nuit',note:'',soon:true},{label:'Aide ménagère',note:'',soon:true},{label:'Livraison de repas',note:'',soon:true}],
+        crisis:null,note:'Nommer une tâche à déléguer est un bon premier pas.'},
+      {id:'pain',icon:'+',title:"J'ai mal",sub:'Trouvons la prochaine étape',
+        actions:[{label:'Respirer avec moi',go:'breathe'},{label:"Savoir quand demander de l'aide",go:'care'}],
+        help:[{label:'Prendre rendez-vous médecin',note:'',soon:true},{label:'Kiné en vidéo ou en cabinet',note:'',soon:true}],
+        crisis:'medical',note:"Une douleur qui s'aggrave ou devient sévère mérite une évaluation clinique rapide — pas d'attente."},
+      {id:'feeding',icon:'❀',title:"L'alimentation est difficile",sub:'Du soutien existe pour cela',
+        actions:[{label:'Parler avec Mon Village',go:'chat'}],
+        help:[{label:'Consultantes en lactation IBCLC',note:'Rendez-vous en visio',soon:true},{label:"Vidéos d'alimentation",note:'',soon:true}],
+        crisis:null,note:'Fièvre, zone rouge et chaude du sein, ou grand malaise → consultez rapidement.'},
+      {id:'baby',icon:'✿',title:'Mon bébé va bien ?',sub:'La peur de 3h du matin est universelle',
+        actions:[{label:'Parler avec Mon Village',go:'chat'}],
+        help:[{label:'Quand appeler le pédiatre',note:'Un guide clair',soon:true},{label:"Numéros d'infirmières conseil",note:'De vraies personnes, jour et nuit'}],
+        crisis:null,note:"Des vidéos d'apaisement arrivent bientôt."},
+      {id:'sleepless',icon:'◐',title:"Je n'arrive pas à dormir",sub:"Pour les nuits d'insomnie",
+        actions:[{label:'Respirer avec moi',go:'breathe'},{label:'Une page pour soi',go:'journal'}],
+        help:[{label:'Audios de sommeil',note:'',soon:true},{label:'Rituels du soir',note:'',soon:true}],
+        crisis:null,note:"Si l'insomnie persiste même quand bébé dort, ou s'accompagne d'humeur basse ou de pensées qui s'emballent, <button class=\"text-btn\" data-go=\"care\" style=\"padding:0;display:inline\">contactez votre professionnel</button>."},
+      {id:'wrong',icon:'!',title:'Quelque chose ne va pas',sub:'Faites confiance à ce signal',first:'crisis',urgent:true,
+        actions:[{label:"Savoir quand demander de l'aide",go:'care'}],
+        help:[{label:"Signaux d'alerte",note:'Saignement abondant, mal de tête intense, troubles visuels, fièvre, douleur thoracique, difficulté à respirer → appelez votre médecin ou allez aux urgences.'}],
+        crisis:'medical',note:null},
+      {id:'partner',icon:'✎',title:'Tensions avec mon partenaire',sub:'Le bouleversement du couple est réel',
+        actions:[{label:'Une page pour soi',go:'journal'},{label:'Parler avec Mon Village',go:'chat'}],
+        help:[{label:'Annuaire de thérapeutes de couple',note:'',soon:true}],
+        crisis:null,note:'Le bouleversement de la relation après une naissance est extrêmement courant — et rarement évoqué.'}
+    ]
+  };
+  var exerciseNames={en:['360° rib breathing','Heel slides with exhale','Bridge preparation','Resting body scan'],fr:['Respiration costale à 360°','Glissés de talon en expirant','Préparation du pont','Scan corporel au repos']};
+  var GROUPS=[
+    {key:'gBody',needs:['recover','pain','feeding','wrong']},
+    {key:'gBaby',needs:['baby']},
+    {key:'gEmo',needs:['lonely','anxious','low','partner']},
+    {key:'gRest',needs:['sleepless','exhausted']}
+  ];
+  var PLAYLIST='https://www.youtube.com/playlist?list=PLdWtPsIf5cf0';
+  var PROGRAM={
+    en:[
+      {id:'w12',weeks:'Weeks 1–2',title:'Reconnect',videos:[
+        {type:'Education',mins:15,intensity:'1/4',equip:'Small ball + flex band',label:'Core anatomy & breathing foundations',note:'How the diaphragm, transverse abdominis and pelvic floor work together — breathing patterns, rib flare, and engaging the pelvic floor without compensations.',url:PLAYLIST},
+        {type:'Breathing',mins:5,intensity:'1/4',equip:'No equipment',label:'Breath & reconnect in three positions',note:'Re-establish the link between breath, pelvic floor and deep abdominals — a gentle core lift for early recovery.',url:PLAYLIST},
+        {type:'Breathing',mins:5,intensity:'1/4',equip:'No equipment',label:'Two breathing techniques',note:'Core breathing to relax and reconnect, active core breathing for stability when lifting and carrying.',url:PLAYLIST}
+      ],series:PLAYLIST},
+      {id:'w34',weeks:'Weeks 3–4',title:'',soon:true},
+      {id:'w56',weeks:'Weeks 5–6',title:'',soon:true}
+    ],
+    fr:[
+      {id:'w12',weeks:'Semaines 1–2',title:'Reconnexion',videos:[
+        {type:'Éducation',mins:15,intensity:'1/4',equip:'Petit ballon + bande',label:'Anatomie du centre & respiration',note:"Comment le diaphragme, le transverse et le périnée travaillent ensemble — respiration, côtes évasées et engagement du périnée sans compensations.",url:PLAYLIST},
+        {type:'Respiration',mins:5,intensity:'1/4',equip:'Sans matériel',label:'Respiration & reconnexion en trois positions',note:'Retrouvez le lien entre souffle, périnée et abdominaux profonds — un réveil du centre tout en douceur.',url:PLAYLIST},
+        {type:'Respiration',mins:5,intensity:'1/4',equip:'Sans matériel',label:'Deux techniques de respiration',note:'Respiration diaphragmatique pour se détendre et reconnecter, respiration active pour la stabilité au quotidien.',url:PLAYLIST}
+      ],series:PLAYLIST},
+      {id:'w34',weeks:'Semaines 3–4',title:'',soon:true},
+      {id:'w56',weeks:'Semaines 5–6',title:'',soon:true}
+    ]
+  };
+  function getWeek(){try{return localStorage.getItem('mv_week')||'w12'}catch(e){return 'w12'}}
+  function setWeek(w){try{localStorage.setItem('mv_week',w)}catch(e){}renderProgram();toast(tr('weekSaved'))}
+  function renderProgram(){
+    var lang=state.lang,ph=PROGRAM[lang]||PROGRAM.en,wk=getWeek();
+    q('#weekPills').innerHTML=[['w12','1–2'],['w34','3–4'],['w56','5–6'],['w6p','6+']].map(function(p){return '<button class="chip'+(wk===p[0]?' selected':'')+'" data-week="'+p[0]+'">'+p[1]+'</button>'}).join('');
+    q('#programPhases').innerHTML=ph.map(function(p){
+      var head='<div class="phase-head"><strong data-ov="prog.'+p.id+'.head">'+escapeHtml(p.weeks+(p.title?' · '+p.title:''))+'</strong>'+(p.id===wk?'<span class="here-badge">'+escapeHtml(tr('youAreHere'))+'</span>':'')+'</div>';
+      if(p.soon)return '<div class="phase">'+head+'<p class="muted">'+escapeHtml(tr('comingSoon'))+'</p></div>';
+      var rows=p.videos.map(function(v,vi){
+        var tags='<div class="tags" style="margin-top:8px"><span class="tag">'+escapeHtml(v.type)+'</span><span class="tag">⏱ '+v.mins+' min</span><span class="tag">⭐ '+escapeHtml(v.intensity)+'</span><span class="tag">'+escapeHtml(v.equip)+'</span></div>';
+        return '<a class="resource-card" href="'+escapeHtml(v.url)+'" target="_blank" rel="noopener"><strong data-ov="prog.'+p.id+'.v'+vi+'.label">'+escapeHtml(v.label)+'</strong><small data-ov="prog.'+p.id+'.v'+vi+'.note">'+escapeHtml(v.note)+'</small>'+tags+'</a>';
+      }).join('');
+      return '<div class="phase">'+head+'<div class="resource-list">'+rows+'</div><a class="text-btn" href="'+escapeHtml(p.series)+'" target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:8px">'+escapeHtml(tr('playSeries'))+'</a></div>';
+    }).join('');
+    applyOverrides();
+  }
+  var exerciseCues={en:['Let the back and sides of your ribs widen. Nothing to force.','Slide only as far as your pelvis stays easy and quiet.','Exhale, soften the ribs, and barely float the pelvis.','Let the floor carry you. Unclench the jaw and hands.'],fr:["Laissez l’arrière et les côtés des côtes s’ouvrir. Rien à forcer.","Glissez seulement tant que le bassin reste calme et confortable.","Expirez, relâchez les côtes et soulevez à peine le bassin.","Laissez le sol vous porter. Desserrez la mâchoire et les mains."]};
+  function q(s){return document.querySelector(s)} function qa(s){return Array.from(document.querySelectorAll(s))}
+  function tr(k){return (T[state.lang]&&T[state.lang][k])||k}
+  function fillI18n(root){Array.from(root.querySelectorAll('[data-i18n]')).forEach(function(el){var k=el.dataset.i18n;if(T[state.lang][k])el.textContent=T[state.lang][k]});Array.from(root.querySelectorAll('[data-i18n-placeholder]')).forEach(function(el){el.placeholder=tr(el.dataset.i18nPlaceholder)})}
+  function applyLanguage(){document.documentElement.lang=state.lang;fillI18n(document);qa('.lang').forEach(function(b){b.classList.toggle('active',b.dataset.lang===state.lang)});q('#languageChoices').querySelectorAll('.choice').forEach(function(b){b.classList.toggle('selected',b.dataset.value===state.lang)});updateHome();renderChat();renderNeedList();if(q('#need').classList.contains('active')){if(state.needId)renderNeed(state.needId);else if(state.triageOpen)renderTriage()}if(q('#session').classList.contains('active'))renderProgram();if(q('#checkin').classList.contains('active'))renderCheck();if(q('#care').classList.contains('active'))renderCare();applyOverrides();}
+  function go(id){qa('.screen').forEach(function(s){s.classList.remove('active')});q('#'+id).classList.add('active');var main=['home','chat','session','care','need'].includes(id);q('#bottomNav').classList.toggle('show',main);qa('.nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset.go===id)});window.scrollTo(0,0);if(id==='chat')renderChat();if(id==='checkin'){state.check={};renderCheck()}if(id==='home'){updateHome();renderNeedList()}if(id==='session')renderProgram();if(id==='player')setupPlayer();if(id==='care')renderCare();if(id==='plan')renderPlan();}
+  qa('[data-go]').forEach(function(b){b.addEventListener('click',function(){if(state.editing)return;go(b.dataset.go)})});
+  qa('.lang').forEach(function(b){b.addEventListener('click',function(){if(state.editing)return;state.lang=b.dataset.lang;applyLanguage()})});
+  qa('[data-next]').forEach(function(b){b.addEventListener('click',function(){var n=b.dataset.next;qa('.form-step').forEach(function(x){x.classList.toggle('active',x.dataset.step===n)});q('#onboardProgress').style.width=(Number(n)*33.33)+'%'})});
+  qa('#birthChoices .choice').forEach(function(b){b.addEventListener('click',function(){state.birth=b.dataset.value;qa('#birthChoices .choice').forEach(function(x){x.classList.toggle('selected',x===b)})})});
+  qa('#languageChoices .choice').forEach(function(b){b.addEventListener('click',function(){state.lang=b.dataset.value;applyLanguage()})});
+  q('#finishOnboard').addEventListener('click',function(){state.name=q('#name').value.trim()||(state.lang==='fr'?'Maman':'Mama');state.country=q('#country').value;go('home')});
+  function updateHome(){var hr=new Date().getHours(),g=state.lang==='fr'?(hr<12?'Bonjour':hr<18?'Bon après-midi':'Bonsoir'):(hr<12?'Good morning':hr<18?'Good afternoon':'Good evening');q('#hello').textContent=g+(state.name?', '+state.name:'');q('#avatar').textContent=(state.name||'M').charAt(0).toUpperCase();q('#todayLabel').textContent=new Intl.DateTimeFormat(state.lang==='fr'?'fr-FR':'en-US',{weekday:'long',month:'long',day:'numeric'}).format(new Date())}
+  function renderCheck(){var i=Object.keys(state.check).length,d=checkData[state.lang][i],n=checkData[state.lang].length;q('#checkStep').textContent=Math.min(i+1,n);q('#checkProgress').style.width=((i+1)/n*100)+'%';q('#checkQuestion').innerHTML='<div class="question"><div class="eyebrow">'+(state.lang==='fr'?'Bilan du jour':'Today’s check-in')+'</div><h3 data-ov="check.q'+i+'">'+d.q+'</h3>'+(d.sub?'<p class="check-sub" data-ov="check.sub'+i+'">'+d.sub+'</p>':'')+'<div class="scale">'+d.opts.map(function(x,m){return '<button data-score="'+m+'" data-ov="check.opt'+i+'_'+m+'">'+x+'</button>'}).join('')+'</div></div>';qa('#checkQuestion button').forEach(function(b){b.addEventListener('click',function(){state.check[i]=Number(b.dataset.score);if(i===n-1){computeRec();go('recommendation')}else renderCheck()})});applyOverrides()}
+  function computeRec(){var c=state.check,fr=state.lang==='fr';var domains=fr?['corps','esprit','sommeil','essentiels','soutien']:['body','mind','sleep','basics','connection'];var lowIdx=[],k;for(k=0;k<5;k++){if(c[k]<=1)lowIdx.push(k)}var worried=c[5]===2,noted=c[5]===1,physicalBad=c[0]===0,mentalLow=c[1]===0;var kind='restore',crisis=null;if(worried||physicalBad){kind='clinical';crisis='medical'}else if(mentalLow){kind='mind';crisis='mental'}else if(lowIdx.length){kind='rest'}state.rec=kind;var title='',reason='',sess='',sessSub='',dur='',dest='player';if(kind==='clinical'){title=fr?'Votre corps demande une évaluation, pas un entraînement.':'Your body is asking for assessment, not a workout.';reason=fr?'Mettez le mouvement en pause et contactez aujourd’hui votre maternité ou votre professionnel de santé.':'Pause movement and contact your maternity or pelvic-health clinician today.';sess=fr?'Pause & respiration soutenue':'Pause & supported breathing';sessSub=fr?'5 minutes · aucun effort':'5 minutes · no exertion';dur='5 MIN'}else if(kind==='mind'){title=fr?'Votre esprit demande du soutien aujourd’hui.':'Your mind is asking for support today.';reason=fr?'Se sentir très bas mérite un soutien humain. Parlez-en aujourd’hui à une personne de confiance ou à votre professionnel — et envisagez l’auto-évaluation d’humeur.':'Feeling very low deserves human support. Tell a trusted person or your clinician today — and consider the mood self-screen.';sess=fr?'Pause respiration soutenue':'Supported breathing pause';sessSub=fr?'5 minutes · aucun effort':'5 minutes · no exertion';dur='5 MIN';dest='breathe'}else if(kind==='rest'){var ds=lowIdx.map(function(x){return domains[x]});var dsTxt=ds.length>1?ds.slice(0,-1).join(', ')+' '+(fr?'et':'and')+' '+ds[ds.length-1]:ds[0];title=fr?'Aujourd’hui : moins d’effort, plus de soutien.':'Today calls for less effort, more support.';reason=(fr?'Votre ':'Your ')+dsTxt+(ds.length>1?(fr?' demandent de la douceur.':' could use some gentleness.'):(fr?' demande de la douceur.':' could use some gentleness.'));if(noted)reason+=fr?' Et si quelque chose vous semble différent, mentionnez-le à votre professionnel.':' And since something feels different, mention it to your provider.';sess=fr?'Réinitialisation réparatrice':'Restorative reset';sessSub=fr?'10 min · bébé à proximité · sans matériel':'10 min · baby nearby · no equipment';dur='10 MIN'}else{title=fr?'Vous avez de la place pour reconnecter en douceur.':'You have room for a gentle reconnection.';reason=fr?'Votre bilan est stable':'Your check-in looks steady';if(noted)reason+=fr?' — mais si quelque chose vous semble différent, faites-vous confiance et parlez-en.':' — but if something feels different, trust yourself and mention it.';else reason+='.';sess=fr?'Votre programme de récupération':'Your restore program';sessSub=fr?'Vidéos par semaine · temps & intensité au choix':'Week-based videos · pick by time & intensity';dur=fr?'Vidéos':'Videos';dest='session'}q('#recTitle').textContent=title;q('#recReason').textContent=reason;q('#recSessionTitle').textContent=sess;q('#recSessionSub').textContent=sessSub;q('#recDuration').textContent=dur;var sb=q('#recStartBtn');if(sb)sb.setAttribute('data-go',dest);q('#recCrisis').innerHTML=crisis?crisisHTML(crisis):''}
+  function setupPlayer(){clearInterval(state.player.timer);state.player.running=false;state.player.index=0;state.player.remaining=120;renderPlayer()}
+  function renderPlayer(){var p=state.player,total=[120,180,180,240][p.index];q('#playerExercise').textContent=exerciseNames[state.lang][p.index];q('#playerCue').textContent=exerciseCues[state.lang][p.index];q('#exerciseCount').textContent=(p.index+1)+' / 4';q('#playerTime').textContent=fmt(p.remaining);q('#playerProgress').style.width=((total-p.remaining)/total*100)+'%';q('#playPause').textContent=p.running?'Ⅱ':'▶'}
+  function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+  q('#playPause').addEventListener('click',function(){var p=state.player;p.running=!p.running;clearInterval(p.timer);if(p.running)p.timer=setInterval(function(){p.remaining--;if(p.remaining<=0){nextExercise()}renderPlayer()},1000);renderPlayer()});
+  function nextExercise(){var p=state.player;clearInterval(p.timer);p.running=false;if(p.index<3){p.index++;p.remaining=[120,180,180,240][p.index]}else{toast(state.lang==='fr'?'Séance terminée — bravo pour cette pause.':'Session complete — well done for making space.');go('home')}renderPlayer()}
+  q('#nextExercise').addEventListener('click',nextExercise);q('#restartExercise').addEventListener('click',function(){state.player.remaining=[120,180,180,240][state.player.index];renderPlayer()});
+  function renderChat(){var c=chat[state.lang];q('#messages').innerHTML='<div class="bubble bot"><p>'+c.welcome+'</p></div>';q('#chatChips').innerHTML=c.chips.map(function(x){return '<button class="chip '+(x[0]==='crisis'?'danger':'')+'" data-chat="'+x[0]+'">'+x[1]+'</button>'}).join('');qa('[data-chat]').forEach(function(b){b.addEventListener('click',function(){chatReply(b.dataset.chat,b.textContent)})})}
+  function chatReply(key,label){var m=q('#messages');m.insertAdjacentHTML('beforeend','<div class="bubble user"><p>'+label+'</p></div>');if(key==='crisis'){m.insertAdjacentHTML('beforeend',crisisHTML('mental'))}else{m.insertAdjacentHTML('beforeend','<div class="bubble bot"><p>'+chat[state.lang].responses[key]+'</p></div>')}m.scrollTop=m.scrollHeight}
+  var resources={US:{mental:['988 Suicide & Crisis Lifeline','988'],emergency:['Emergency services','911']},FR:{mental:['Prévention du suicide','3114'],emergency:['Urgences médicales','15 / 112']},CA:{mental:['Suicide Crisis Helpline','988'],emergency:['Emergency services','911']},UK:{mental:['Samaritans','116 123'],emergency:['Emergency services','999']},OTHER:{mental:['Find a local crisis line','findahelpline.com'],emergency:['Local emergency services','Local number']}};
+  function crisisHTML(kind){var r=resources[state.country]||resources.OTHER,fr=state.lang==='fr';var title=kind==='medical'?(fr?'Aide médicale urgente':'Urgent medical help'):(fr?'Vous méritez un soutien humain maintenant':'You deserve human support now');var copy=kind==='medical'?(fr?'Si des symptômes sont sévères, soudains ou mettent votre vie en danger, appelez les urgences locales maintenant.':'If symptoms are severe, sudden, or life-threatening, call local emergency services now.'):(fr?'Si vous pensez à vous faire du mal ou à faire du mal à votre bébé, ne restez pas seule. Appelez maintenant, éloignez-vous de tout moyen de vous blesser et demandez à une personne de confiance de rester avec vous.':'If you may harm yourself or your baby, do not stay alone. Call now, move away from anything you could use to cause harm, and ask a trusted person to stay with you.');function phone(v){var n=v.split(' / ')[0].replace(/\s/g,'');return /^\d+$/.test(n)?'<a href="tel:'+n+'">'+v+'</a>':'<strong>'+v+'</strong>'}return '<div class="crisis"><h3>'+title+'</h3><p>'+copy+'</p><div class="resource"><span><strong>'+r.mental[0]+'</strong></span>'+phone(r.mental[1])+'</div><div class="resource"><span><strong>'+r.emergency[0]+'</strong></span>'+phone(r.emergency[1])+'</div><p>'+(fr?'Ces ressources dépendent du pays choisi pendant l’accueil. En cas de doute, utilisez les urgences locales.':'These resources follow the country selected in onboarding. If unsure, use local emergency services.')+'</p></div>'}
+  qa('[data-crisis]').forEach(function(b){b.addEventListener('click',function(){q('#careCrisis').innerHTML=crisisHTML('medical');q('#careCrisis').scrollIntoView({behavior:'smooth'})})});
+  function renderNeedList(){var byId={};NEEDS[state.lang].forEach(function(n){byId[n.id]=n});q('#needList').innerHTML=GROUPS.map(function(g){var rows=g.needs.map(function(id){var n=byId[id];if(!n)return '';return '<button class="need-row" data-need="'+n.id+'"><span class="nicon" aria-hidden="true">'+n.icon+'</span><span class="ntext"><strong data-ov="need.'+n.id+'.title">'+n.title+'</strong><small data-ov="need.'+n.id+'.sub">'+n.sub+'</small></span><span class="chev" aria-hidden="true">›</span></button>'}).join('');return '<div class="eyebrow" style="margin:18px 2px 8px" data-i18n="'+g.key+'">'+tr(g.key)+'</div>'+rows}).join('');applyOverrides()}
+  var RELATED={pain:['recover','feeding','wrong'],recover:['pain','feeding'],feeding:['baby','pain'],wrong:['pain'],baby:['feeding','sleepless'],lonely:['low','anxious','exhausted'],anxious:['low','lonely'],low:['lonely','anxious'],sleepless:['exhausted','low'],exhausted:['sleepless','lonely','partner'],partner:['lonely','low']};
+  function renderNeed(id){
+    var need=null;NEEDS[state.lang].forEach(function(n){if(n.id===id)need=n});if(!need)return;
+    q('#needTitle').textContent=need.title;
+    q('#needTitle').setAttribute('data-ov','need.'+id+'.title');
+    function crisisBlock(){if(!need.crisis)return '';var h=crisisHTML(need.crisis);return need.urgent?'<div class="crisis-wrap-urgent">'+h+'</div>':h}
+    function actionsBlock(){if(!need.actions||!need.actions.length)return '';return '<div class="eyebrow" style="margin:22px 2px 10px">'+tr('rightNow')+'</div><div class="resource-list">'+need.actions.map(function(a){return '<button class="resource-card need-action" data-go="'+a.go+'"><strong>'+a.label+' ›</strong></button>'}).join('')+'</div>'}
+    function helpBlock(){if(!need.help||!need.help.length)return '';var ebtn=state.editing?'':' hidden';return '<div class="eyebrow" style="margin:22px 2px 10px">'+tr('whoCanHelp')+'</div><div class="resource-list">'+need.help.map(function(h,i){var rk=resKey(id+'.'+i),ro=getResOverride(rk);var label=(ro&&ro.label)||h.label;var note=(ro&&ro.note!=null&&ro.note!=='')?ro.note:(h.note||'');var url=ro?cleanUrl(ro.url):'';var btn='<button class="res-link-btn'+ebtn+'" data-resbtn="'+id+'.'+i+'" aria-label="🔗">🔗</button>';if(url){return '<a class="resource-card" data-res="'+id+'.'+i+'" href="'+escapeHtml(url)+'" target="_blank" rel="noopener"><strong>'+escapeHtml(label)+'</strong>'+(note?'<small>'+escapeHtml(note)+'</small>':'')+btn+'</a>'}var pnote=note;if(h.soon)pnote=(pnote?pnote+' · ':'')+tr('comingSoon');return '<div class="resource-card" data-res="'+id+'.'+i+'"><strong>'+escapeHtml(label)+'</strong>'+(pnote?'<small>'+escapeHtml(pnote)+'</small>':'')+btn+'</div>'}).join('')+'</div>'}
+    function noteBlock(){return need.note?'<div class="notice" style="margin-top:18px" data-ov="need.'+id+'.note">'+need.note+'</div>':''}
+    function relatedBlock(){var rel=RELATED[id];if(!rel||!rel.length)return '';var chips=rel.map(function(rid){var rn=null;NEEDS[state.lang].forEach(function(n){if(n.id===rid)rn=n});return rn?'<button class="chip" data-rel="'+rid+'">'+rn.title+'</button>':''}).join('');if(!chips)return '';return '<div class="eyebrow" style="margin:22px 2px 10px">'+tr('relatedTitle')+'</div><div class="chips" style="border:0;padding-top:2px">'+chips+'</div>'}
+    var html='';
+    if(need.first==='crisis')html=crisisBlock()+helpBlock()+actionsBlock()+noteBlock();
+    else if(need.first==='help')html=helpBlock()+crisisBlock()+actionsBlock()+noteBlock();
+    else html=actionsBlock()+helpBlock()+noteBlock()+crisisBlock();
+    q('#needBody').innerHTML=html+relatedBlock();
+    applyOverrides();
+  }
+  function openNeed(id){state.needId=id;state.triageOpen=false;renderNeed(id);go('need')}
+  q('#needList').addEventListener('click',function(e){if(state.editing)return;var b=e.target.closest('[data-need]');if(b)openNeed(b.dataset.need)});
+  q('#needBody').addEventListener('click',function(e){if(state.editing)return;var t=e.target.closest('[data-triage]');if(t){var tg=TRIAGE[Number(t.dataset.triage)].target;if(tg[0]==='need')openNeed(tg[1]);else go(tg[0]);return}var r=e.target.closest('[data-rel]');if(r){openNeed(r.dataset.rel);return}var b=e.target.closest('[data-go]');if(b)go(b.dataset.go)});
+  q('#needBody').addEventListener('click',function(e){var rb=e.target.closest('[data-resbtn]');if(rb){e.preventDefault();e.stopPropagation();if(state.editing)openResDialog(rb.dataset.resbtn);return}if(state.editing){var a=e.target.closest('a[data-res]');if(a)e.preventDefault()}});
+  var TRIAGE=[{key:'triBody',target:['need','pain']},{key:'triBaby',target:['need','baby']},{key:'triEmo',target:['need','low']},{key:'triSleep',target:['need','sleepless']},{key:'triScared',target:['need','wrong']},{key:'triSomeone',target:['need','lonely']},{key:'triIdk',target:['chat']}];
+  function renderTriage(){q('#needTitle').textContent=tr('triageHead');q('#needTitle').setAttribute('data-ov','triage.head');q('#needBody').innerHTML='<div class="eyebrow" data-i18n="triageEyebrow"></div><div class="resource-list">'+TRIAGE.map(function(t,i){return '<button class="resource-card need-action" data-triage="'+i+'"><strong data-i18n="'+t.key+'"></strong><span aria-hidden="true"> ›</span></button>'}).join('')+'</div>';fillI18n(q('#needBody'));applyOverrides()}
+  function openTriage(){state.needId=null;state.triageOpen=true;renderTriage();go('need')}
+  q('#weekPills').addEventListener('click',function(e){if(state.editing)return;var b=e.target.closest('[data-week]');if(b)setWeek(b.dataset.week)});
+  function renderCare(){var rc=q('#careRedCrisis');if(rc)rc.innerHTML=crisisHTML('medical')}
+  function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+  function cleanUrl(u){var s=String(u||'').trim();if(!s)return '';if(/^(javascript|data|vbscript|file):/i.test(s))return '';if(!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(s))s='https://'+s;return /^https?:\/\//i.test(s)?s:''}
+  function getResOverride(rk){var b=(state.overrides&&state.overrides[state.lang])||{};var v=b[rk];return (v&&typeof v==='object'&&!Array.isArray(v))?v:null}
+  function resKey(rid){var p=String(rid).split('.');return 'need.'+p[0]+'.res.'+p[1]}
+  var PLAN_FIELDS=['planF1','planF2','planF3','planF4','planF5','planF6','planF7','planF8'];
+  function getPlan(){try{var d=JSON.parse(localStorage.getItem('mv_careplan')||'null');return d&&typeof d==='object'?d:null}catch(e){return null}}
+  function renderPlan(){var d=getPlan(),fw=q('#planFormWrap'),sw=q('#planSummaryWrap');var has=d&&(((d.fields&&Object.keys(d.fields).length)||0)||((d.checks&&d.checks.length)||0));if(has){fw.classList.add('hidden');sw.classList.remove('hidden');var html='';PLAN_FIELDS.forEach(function(k){var v=(d.fields||{})[k];if(v)html+='<div class="plan-row"><span>'+escapeHtml(tr(k))+'</span><strong>'+escapeHtml(v)+'</strong></div>'});var ck=(d.checks||[]);if(ck.length){html+='<div class="eyebrow" style="margin:16px 0 4px">'+escapeHtml(tr('planPartnerT'))+'</div><ul class="plan-list">'+ck.map(function(k){return '<li>✓ '+escapeHtml(tr(k))+'</li>'}).join('')+'</ul>'}q('#planSummary').innerHTML=html||'<p class="muted">'+escapeHtml(tr('planEmpty'))+'</p>'}else{fw.classList.remove('hidden');sw.classList.add('hidden')}}
+  qa('#planChecks .choice').forEach(function(b){b.addEventListener('click',function(){if(state.editing)return;b.classList.toggle('selected')})});
+  q('#planSave').addEventListener('click',function(){if(state.editing)return;var fields={};PLAN_FIELDS.forEach(function(k,i){var v=q('#plan_f'+(i+1)).value.trim();if(v)fields[k]=v});var checks=[];qa('#planChecks .choice.selected').forEach(function(b){checks.push(b.dataset.pk)});try{localStorage.setItem('mv_careplan',JSON.stringify({fields:fields,checks:checks}))}catch(e){}renderPlan();toast(tr('planSaved'));window.scrollTo(0,0)});
+  q('#planEdit').addEventListener('click',function(){if(state.editing)return;var d=getPlan()||{fields:{},checks:[]};PLAN_FIELDS.forEach(function(k,i){q('#plan_f'+(i+1)).value=(d.fields||{})[k]||''});var set={};(d.checks||[]).forEach(function(k){set[k]=1});qa('#planChecks .choice').forEach(function(b){b.classList.toggle('selected',!!set[b.dataset.pk])});q('#planFormWrap').classList.remove('hidden');q('#planSummaryWrap').classList.add('hidden');window.scrollTo(0,0)});
+  q('#planCopy').addEventListener('click',function(){if(state.editing)return;var d=getPlan();if(!d)return;var lines=[tr('planSummaryT'),''];PLAN_FIELDS.forEach(function(k){var v=(d.fields||{})[k];if(v)lines.push(tr(k)+': '+v)});if((d.checks||[]).length){lines.push('',tr('planPartnerT'));d.checks.forEach(function(k){lines.push('• '+tr(k))})}var txt=lines.join('\n');if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){toast(tr('planCopied'))}).catch(function(){toast(tr('planCopyFail'))})}else{toast(tr('planCopyFail'))}});
+  q('#startEpds').addEventListener('click',function(){state.epds={index:0,answers:[]};q('#epdsIntro').classList.add('hidden');q('#epdsQuiz').classList.remove('hidden');renderEpds()});
+  function renderEpds(){var e=state.epds,d=epds[state.lang][e.index];q('#epdsProgress').style.width=((e.index+1)*10)+'%';q('#epdsStep').textContent=e.index+1;q('#epdsQuestion').innerHTML='<div class="epds-q active"><h3>'+d[0]+'</h3><div class="scale">'+d[1].map(function(x){return '<button data-value="'+x[1]+'">'+x[0]+'</button>'}).join('')+'</div></div>';qa('#epdsQuestion button').forEach(function(b){b.addEventListener('click',function(){e.answers.push(Number(b.dataset.value));if(e.index===9)finishEpds();else{e.index++;renderEpds()}})})}
+  function finishEpds(){var e=state.epds,score=e.answers.reduce(function(a,b){return a+b},0),harm=e.answers[9]>0,fr=state.lang==='fr',band=score>=13?(fr?'Score élevé — contactez rapidement un professionnel':'Elevated score — contact a clinician promptly'):score>=10?(fr?'Détresse possible — parlez à un professionnel':'Possible distress — speak with a clinician'):(fr?'Score faible — restez attentive à votre vécu':'Lower score — keep listening to how you feel'),copy=score>=13?(fr?'Ce résultat suggère un niveau important de symptômes. Contactez dès que possible votre sage-femme, médecin ou professionnel de santé mentale périnatale.':'This result suggests a significant level of symptoms. Contact your midwife, doctor, or perinatal mental-health provider as soon as possible.'):score>=10?(fr?'Ce résultat mérite une conversation avec votre sage-femme, médecin ou professionnel périnatal.':'This result deserves a conversation with your midwife, doctor, or perinatal provider.'):(fr?'Un score faible n’annule pas une inquiétude. Demandez de l’aide si quelque chose vous semble difficile ou inhabituel.':'A lower score does not cancel a concern. Reach out if anything feels difficult or unlike you.');q('#epdsQuiz').classList.add('hidden');var html='<div class="eyebrow">'+(fr?'Votre résultat':'Your result')+'</div><div class="score">'+score+'<small style="font:600 14px DM Sans"> / 30</small></div><div class="band"><strong>'+band+'</strong><p>'+copy+'</p></div><div class="notice">'+(fr?'Cette auto-évaluation n’est pas un diagnostic. Le seuil et l’interprétation peuvent varier selon le contexte clinique.':'This self-screen is not a diagnosis. Thresholds and interpretation may vary by clinical context.')+'</div>';if(harm)html+=crisisHTML('mental');html+='<button class="primary" data-go-final="home" style="margin-top:18px">'+(fr?'Retour à l’accueil':'Back home')+'</button>';q('#epdsResult').innerHTML=html;q('#epdsResult').classList.remove('hidden');q('[data-go-final]').addEventListener('click',function(){if(state.editing)return;q('#epdsResult').classList.add('hidden');q('#epdsIntro').classList.remove('hidden');go('home')})}
+  q('#breathStart').addEventListener('click',function(){var b=state.breath;b.running=!b.running;clearInterval(b.timer);q('#breathOrb').classList.toggle('active',b.running);q('#breathStart').textContent=b.running?(state.lang==='fr'?'Pause':'Pause'):tr('startBreathing');if(b.running){var elapsed=0;phase(elapsed);b.timer=setInterval(function(){b.remaining--;elapsed=(elapsed+1)%14;phase(elapsed);q('#breathTime').textContent=fmt(b.remaining);if(b.remaining<=0){resetBreath();toast(state.lang==='fr'?'Deux minutes pour vous.':'Two minutes, just for you.')}},1000)}});
+  function phase(n){var text=n<4?(state.lang==='fr'?'Inspirez':'Inhale'):n<8?(state.lang==='fr'?'Pause douce':'Soft hold'):(state.lang==='fr'?'Expirez':'Exhale');q('#breathPhase').textContent=text}
+  function resetBreath(){var b=state.breath;clearInterval(b.timer);b.remaining=120;b.running=false;q('#breathTime').textContent='02:00';q('#breathOrb').classList.remove('active');q('#breathPhase').textContent=tr('ready');q('#breathStart').textContent=tr('startBreathing')}
+  q('#breathReset').addEventListener('click',resetBreath);
+  q('#copyJournal').addEventListener('click',function(){var v=q('#journalText').value;if(!v){toast(state.lang==='fr'?'Écrivez d’abord quelques mots.':'Write a few words first.');return}navigator.clipboard.writeText(v).then(function(){toast(state.lang==='fr'?'Texte copié.':'Reflection copied.')}).catch(function(){toast(state.lang==='fr'?'Copie non disponible ici.':'Copy is not available here.')})});
+  q('#downloadJournal').addEventListener('click',function(){var v=q('#journalText').value;if(!v){toast(state.lang==='fr'?'Écrivez d’abord quelques mots.':'Write a few words first.');return}var blob=new Blob([v],{type:'text/plain'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='reflection-'+new Date().toISOString().slice(0,10)+'.txt';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},1000);toast(state.lang==='fr'?'Note téléchargée.':'Note downloaded.')});
+  function toast(msg){var t=q('#toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2200)}
+  function applyOverrides(){var ov=(state.overrides&&state.overrides[state.lang])||{};qa('[data-i18n]').forEach(function(el){var k=el.dataset.i18n,v=ov[k];if(typeof v==='string')el.textContent=v});qa('[data-ov]').forEach(function(el){var k=el.dataset.ov,v=ov[k];if(typeof v==='string')el.textContent=v});var pen=qa('.editPenBtn');if(pen)pen.forEach(function(p){p.setAttribute('aria-label',tr('editBtn'))})}
+  function enterEditMode(){state.editing=true;document.body.classList.add('editing');qa('.app [data-i18n],.app [data-ov]').forEach(function(el){el.setAttribute('contenteditable','true')});q('#editBar').classList.remove('hidden');var rh=q('#resHint');if(rh)rh.classList.remove('hidden');qa('.res-link-btn').forEach(function(b){b.classList.remove('hidden')});window.scrollTo(0,0)}
+  function exitEditMode(){state.editing=false;document.body.classList.remove('editing');qa('.app [contenteditable]').forEach(function(el){el.removeAttribute('contenteditable')});q('#editBar').classList.add('hidden');var rh=q('#resHint');if(rh)rh.classList.add('hidden');qa('.res-link-btn').forEach(function(b){b.classList.add('hidden')})}
+  function tryPin(){var pin=q('#pinInput').value.trim();if(!pin)return;fetch('/.netlify/functions/content',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:pin})}).then(function(r){return r.json().then(function(d){return{ok:r.ok,status:r.status,d:d}},function(){return{ok:false,status:r.status,d:{}}})}).then(function(x){if(x.ok&&x.d&&x.d.ok){state.editPin=pin;q('#pinModal').classList.add('hidden');enterEditMode()}else if(x.status===500){q('#pinErr').textContent=state.lang==='fr'?'Code non configuré — demandez à Hugo de définir EDIT_PIN.':'Edit PIN not configured — ask Hugo to set EDIT_PIN.'}else{q('#pinErr').textContent=tr('wrongPin')}}).catch(function(){q('#pinErr').textContent=tr('wrongPin')})}
+  function harvestEdits(){var lang=state.lang;state.overrides[lang]=state.overrides[lang]||{};var bucket=state.overrides[lang];qa('.app [data-i18n]').forEach(function(el){var v=el.textContent.trim();if(v)bucket[el.dataset.i18n]=v});qa('.app [data-ov]').forEach(function(el){var v=el.textContent.trim();if(v)bucket[el.dataset.ov]=v})}
+  function publishEdits(){harvestEdits();fetch('/.netlify/functions/content',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:state.editPin,overrides:state.overrides})}).catch(function(){});exitEditMode();toast(tr('published'))}
+  function openResDialog(rid){var parts=String(rid).split('.'),nid=parts[0],idx=Number(parts[1]);var need=null;NEEDS[state.lang].forEach(function(n){if(n.id===nid)need=n});if(!need||!need.help||!need.help[idx])return;var h=need.help[idx],ro=getResOverride(resKey(rid));q('#resName').value=(ro&&ro.label)||h.label;q('#resNote').value=(ro&&ro.note!=null)?ro.note:(h.note||'');q('#resUrl').value=(ro&&ro.url)||'';q('#resModal').dataset.rid=rid;q('#resModal').classList.remove('hidden');setTimeout(function(){q('#resName').focus()},60)}
+  function saveResDialog(){var rid=q('#resModal').dataset.rid;if(!rid)return;harvestEdits();var lang=state.lang;state.overrides[lang]=state.overrides[lang]||{};var rawUrl=q('#resUrl').value.trim();var o={label:q('#resName').value.trim(),note:q('#resNote').value.trim()};if(cleanUrl(rawUrl))o.url=rawUrl;state.overrides[lang][resKey(rid)]=o;q('#resModal').classList.add('hidden');if(state.needId)renderNeed(state.needId)}
+  function resetResDialog(){var rid=q('#resModal').dataset.rid;if(!rid)return;harvestEdits();var b=state.overrides[state.lang];if(b)delete b[resKey(rid)];q('#resModal').classList.add('hidden');if(state.needId)renderNeed(state.needId)}
+  q('#resSave').addEventListener('click',saveResDialog);
+  q('#resReset').addEventListener('click',resetResDialog);
+  q('#resCancel').addEventListener('click',function(){q('#resModal').classList.add('hidden')});
+  qa('.editPenBtn').forEach(function(pen){pen.addEventListener('click',function(){if(state.editing){exitEditMode();return}q('#pinModal').classList.remove('hidden');q('#pinErr').textContent='';q('#pinInput').value='';setTimeout(function(){q('#pinInput').focus()},60)})});
+  q('#pinCancel').addEventListener('click',function(){q('#pinModal').classList.add('hidden')});
+  q('#pinOk').addEventListener('click',tryPin);
+  q('#pinInput').addEventListener('keydown',function(e){if(e.key==='Enter')tryPin()});
+  q('#publishPill').addEventListener('click',publishEdits);
+  q('#exitEditBtn').addEventListener('click',exitEditMode);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(!q('#pinModal').classList.contains('hidden'))q('#pinModal').classList.add('hidden');else if(!q('#resModal').classList.contains('hidden'))q('#resModal').classList.add('hidden');else if(state.editing)exitEditMode()}});
+  fetch('/.netlify/functions/content').then(function(r){return r.ok?r.json():{}}).then(function(d){if(d&&d.overrides&&typeof d.overrides==='object'){state.overrides=d.overrides;applyOverrides()}}).catch(function(){});
+  applyLanguage();
+})();
+</script>
+<script src="js/chat-adapter.js"></script>
+</body>
+</html>
