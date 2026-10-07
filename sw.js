@@ -1,5 +1,5 @@
 /* Empowered Maman service worker — offline shell cache (v7: network-first app shell so content edits show up) */
-var CACHE = 'empowered-maman-v7';
+var CACHE = 'empowered-maman-v8';
 var SHELL = [
   './',
   './index.html',
