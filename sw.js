@@ -1,13 +1,6 @@
-/* Empowered Maman service worker — offline shell cache (v7: network-first app shell so content edits show up) */
-var CACHE = 'empowered-maman-v8';
-var SHELL = [
-  './',
-  './index.html',
-  './manifest.webmanifest',
-  './js/chat-adapter.js',
-  './icons/icon-192.png',
-  './icons/icon-512.png'
-];
+/* Empowered Maman service worker — offline shell cache (v9: network-first app shell so content edits show up) */
+var CACHE = 'empowered-maman-v9';
+var SHELL = ['./', './index.html', './manifest.webmanifest', './js/chat-adapter.js', './icons/icon-192.png', './icons/icon-512.png'];
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(SHELL); }).then(function () { return self.skipWaiting(); }));
 });
