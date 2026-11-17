@@ -76,7 +76,7 @@
     .form-step{display:none}.form-step.active{display:block}
     .field{margin:20px 0}
     label,.label{display:block;font-weight:700;font-size:14px;margin-bottom:9px}
-    input[type=text],select,textarea{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:var(--radius-md);padding:15px 16px;outline:none}
+    input[type=text],input[type=date],select,textarea{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:var(--radius-md);padding:15px 16px;outline:none}
     input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent)}
     .choice-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
     .choice,.scale button,.chip{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius-md);padding:13px 12px;font-weight:600;text-align:left}
@@ -102,6 +102,9 @@
     .plan-row-static{cursor:default}
     .plan-row-title{font-weight:700}
     .plan-row-time{flex:none;font-size:13px;color:var(--muted);white-space:nowrap}
+    .stock-pill{flex:none;font-size:12px;font-weight:800;padding:5px 10px;border-radius:999px;background:var(--soft-2);color:var(--accent-deep);white-space:nowrap}
+    .stock-pill.buy{background:#f7d6cd;color:#5c3544}
+    .tl-date{font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap}
 .village-row{display:flex;align-items:center;gap:8px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px}
 .village-name{flex:1;font-weight:700}
 .village-btn{color:var(--plum);font-weight:800;text-decoration:none;padding:8px 6px;white-space:nowrap}
@@ -226,7 +229,7 @@
     <div class="topline"><div class="prototype" data-i18n="prototype">Clickable prototype · Illustrative wellness content</div><div style="display:flex;align-items:center;gap:2px"><button class="edit-pen editPenBtn" id="editPen" aria-label="Edit text">✎</button><div class="lang-toggle"><button class="lang active" data-lang="en">EN</button><button class="lang" data-lang="fr">FR</button></div></div></div>
     <div class="search-wrap"><span class="search-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg></span><input id="searchInput" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="Search by symptom…" autocomplete="off" aria-label="Search"><button id="searchClear" class="search-clear" type="button" aria-label="Clear search">×</button></div><div id="searchResults" class="search-results hidden"></div><div class="home-head"><div><h2 class="hello" id="hello">Good afternoon</h2><div class="date" id="todayLabel"></div></div><div class="avatar" id="avatar">M</div></div>
     <div class="card hero-card" id="heroCard"><div class="eyebrow" style="color:#f7d6cd" data-i18n="dailyCare">Today’s care</div><h3 data-i18n="checkTitle">How are you, really?</h3><p data-i18n="checkCopy">A 60-second check-in helps shape movement and support for today.</p><button class="primary" data-go="checkin" data-i18n="checkCta">Check in now</button></div>
-    <div id="savedWrap"></div><div id="villageStrip"></div><div class="eyebrow" style="margin:26px 2px 8px" data-i18n="needsEyebrow">Your village responds</div>
+    <div id="timelineReminder"></div><div id="savedWrap"></div><div id="villageStrip"></div><div class="eyebrow" style="margin:26px 2px 8px" data-i18n="needsEyebrow">Your village responds</div>
     <h3 style="margin-bottom:10px" data-i18n="needsTitle">What do you need right now?</h3>
     <div id="needList"></div>
     <button class="text-btn" data-go="chat" style="width:100%;margin-top:10px" data-i18n="notSure">Not sure? Talk with Mon Village →</button>
@@ -238,7 +241,7 @@
       <button class="quick" data-go="journal"><span class="icon">⌁</span><strong data-i18n="journalTitle">A quiet page</strong><small data-i18n="journalSub">Guided reflection</small></button>
       <button class="quick" data-go="epds"><span class="icon">+</span><strong data-i18n="epdsTitle">Mood self-screen</strong><small data-i18n="epdsSub">EPDS · about 3 min</small></button><button class="quick" data-go="articles"><span class="icon">❝</span><strong data-i18n="tStoriesTile">Stories</strong><small data-i18n="tStoriesSub">Real stories, checked for accuracy.</small></button>
     </div>
-    <div class="notice" style="margin-top:22px" data-i18n="redFlags">Heavy bleeding, chest pain, trouble breathing, severe headache, fever, calf pain/swelling, or thoughts of harm need urgent clinical help—not an app.</div>
+    <div id="essentialsStrip"></div><div class="notice" style="margin-top:22px" data-i18n="redFlags">Heavy bleeding, chest pain, trouble breathing, severe headache, fever, calf pain/swelling, or thoughts of harm need urgent clinical help—not an app.</div>
   </section>
 
   <section class="screen" id="checkin">
@@ -364,7 +367,7 @@
     </div>
   </section>
 
-  <section class="screen" id="articles"><div class="topline"><button class="back" data-go="home" aria-label="Back">←</button><div class="prototype" data-i18n="tStoriesTitle">Stories</div></div><div class="eyebrow" data-i18n="tStoriesTitle">Stories</div><h2 data-i18n="tStoriesTitle">Stories</h2><p data-i18n="tStoriesSub">Real stories, checked for accuracy.</p><div id="articlesList" class="resource-list" style="margin-top:16px"></div></section><section class="screen" id="article"><div class="topline"><button class="back" data-articleback aria-label="Back">←</button><div class="prototype" data-i18n="tStoriesTitle">Stories</div></div><div id="articleBody"></div><button class="text-btn" data-go="articles" style="width:100%;margin-top:14px" data-i18n="tAllStories">All stories</button></section><section class="screen" id="dir-ibclc"><div class="topline"><button class="back" data-go="need" aria-label="Back">←</button><div class="prototype" data-i18n="dirIbclcTitle">IBCLC lactation consultants</div></div><div class="eyebrow" data-i18n="dirIbclcTitle">IBCLC lactation consultants</div><h2 data-i18n="dirIbclcTitle">IBCLC lactation consultants</h2><p data-i18n="dirIbclcSub">Video visits, and in person in New York.</p><div id="dirIbclcBody"></div></section><section class="screen" id="dir-pelvicpt"><div class="topline"><button class="back" data-go="need" aria-label="Back">←</button><div class="prototype" data-i18n="dirPtTitle">Pelvic-floor physical therapists</div></div><div class="eyebrow" data-i18n="dirPtTitle">Pelvic-floor physical therapists</div><h2 data-i18n="dirPtTitle">Pelvic-floor physical therapists</h2><p data-i18n="dirPtSub">In person in New York City, some by video.</p><div id="dirPtBody"></div></section>  <nav class="bottom-nav" id="bottomNav" aria-label="Primary navigation">
+  <section class="screen" id="articles"><div class="topline"><button class="back" data-go="home" aria-label="Back">←</button><div class="prototype" data-i18n="tStoriesTitle">Stories</div></div><div class="eyebrow" data-i18n="tStoriesTitle">Stories</div><h2 data-i18n="tStoriesTitle">Stories</h2><p data-i18n="tStoriesSub">Real stories, checked for accuracy.</p><div id="articlesList" class="resource-list" style="margin-top:16px"></div></section><section class="screen" id="article"><div class="topline"><button class="back" data-articleback aria-label="Back">←</button><div class="prototype" data-i18n="tStoriesTitle">Stories</div></div><div id="articleBody"></div><button class="text-btn" data-go="articles" style="width:100%;margin-top:14px" data-i18n="tAllStories">All stories</button></section><section class="screen" id="dir-ibclc"><div class="topline"><button class="back" data-go="need" aria-label="Back">←</button><div class="prototype" data-i18n="dirIbclcTitle">IBCLC lactation consultants</div></div><div class="eyebrow" data-i18n="dirIbclcTitle">IBCLC lactation consultants</div><h2 data-i18n="dirIbclcTitle">IBCLC lactation consultants</h2><p data-i18n="dirIbclcSub">Video visits, and in person in New York.</p><div id="dirIbclcBody"></div></section><section class="screen" id="dir-pelvicpt"><div class="topline"><button class="back" data-go="need" aria-label="Back">←</button><div class="prototype" data-i18n="dirPtTitle">Pelvic-floor physical therapists</div></div><div class="eyebrow" data-i18n="dirPtTitle">Pelvic-floor physical therapists</div><h2 data-i18n="dirPtTitle">Pelvic-floor physical therapists</h2><p data-i18n="dirPtSub">In person in New York City, some by video.</p><div id="dirPtBody"></div></section><section class="screen" id="timeline"><div class="topline"><button class="back" data-go="home" aria-label="Back">←</button><div class="prototype" data-i18n="tlTitle">Your baby's timeline</div></div><div class="eyebrow" data-i18n="tlTitle">Your baby's timeline</div><h2 data-i18n="tlTitle">Your baby's timeline</h2><p data-i18n="tlIntro">Enter your baby's birth date, and Mon Village shows the appointments not to miss during the first year, for your baby and for you.</p><div class="field"><label for="birthDate" data-i18n="tlBirthPrompt">What is your baby's birth date?</label><input type="date" id="birthDate"><p class="muted" style="margin-top:8px;font-size:13px" data-i18n="tlPrivacy">This date stays on your phone. Nothing is sent anywhere, nothing is shared.</p></div><div id="timelineList"></div><div id="timelineFoot"></div></section><section class="screen" id="essentials"><div class="topline"><button class="back" data-go="home" aria-label="Back">←</button><div class="prototype" data-i18n="esTitle">Baby essentials</div></div><div class="eyebrow" data-i18n="esTitle">Baby essentials</div><h2 data-i18n="esTitle">Baby essentials</h2><p data-i18n="esIntro">Check what you still have. When something is running low, it moves to your shopping list.</p><p class="muted" style="font-size:13px" data-i18n="esHint">Tap an item to change its stock level.</p><div id="essentialsList"></div><div id="essentialsShop"></div><details class="art-acc"><summary>Sources</summary><div class="art-acc-body"><p data-i18n="esSourcesBody">American Academy of Pediatrics recommendation on vitamin D (400 IU a day for babies).</p></div></details></section>  <nav class="bottom-nav" id="bottomNav" aria-label="Primary navigation">
     <button class="nav-btn active" data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 11 9-8 9 8v9H6v-9"/><path d="M10 20v-6h4v6"/></svg><span data-i18n="navHome">Home</span></button>
     <button class="nav-btn" data-go="chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a8 8 0 0 1-9 8 9 9 0 0 1-4-.9L3 21l1.8-4A8 8 0 1 1 21 12Z"/></svg><span data-i18n="navChat">Ask</span></button>
     <button class="nav-btn" data-go="session"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 20c2-3 2-6 0-9s0-6 3-7m7 16c-2-3-2-6 0-9s0-6-3-7M5 8h14M4 20h16"/></svg><span data-i18n="navMove">Move</span></button>
@@ -379,9 +382,345 @@
 (function(){
   var state={lang:'en',name:'',birth:'vaginal',country:'US',check:{},rec:'rest',player:{index:0,remaining:120,running:false,timer:null},breath:{remaining:120,running:false,timer:null},epds:{index:0,answers:[]},needId:null,triageOpen:false,editing:false,editPin:null,overrides:{}};
   var T={
-    en:{prototype:'Clickable prototype · Illustrative wellness content',welcomeTag:'A gentle place to land',welcomeTitle:'Care for you, in the moments between.',welcomeCopy:'Mon Village by Empowered Maman is a calm postpartum companion for body check-ins, short movement, and a little breathing room—day or night.',welcomeBoundary:'Wellness and educational support only—not a medical device, therapy, diagnosis, emergency care, or a replacement for your clinician.',begin:'Begin',aboutYou:'About you',meetTitle:'Let’s meet where you are today.',nameLabel:'Your first name',stageLabel:'Baby’s age / postpartum stage',stage1:'0–6 weeks',stage2:'7–12 weeks',stage3:'3–6 months',stage4:'6+ months',stage5:'Pregnant / preparing',birthLabel:'Birth experience',birth1:'Vaginal',birth2:'Cesarean',birth3:'Assisted',birth4:'Prefer not to say',continue:'Continue',supportSettings:'Support settings',settingsTitle:'Make support feel familiar.',languageLabel:'Preferred language',countryLabel:'Country for urgent resources',otherCountry:'Other country',boundary:'Wellness support only. This prototype does not provide therapy, diagnosis, emergency care, or replace your clinician.',enter:'Enter your village',dailyCare:'Today’s care',checkTitle:'How are you, really?',checkCopy:'A 60-second check-in helps shape movement and support for today.',checkCta:'Check in now',todayPlanEyebrow:'Your plan for today',todayRead:'To read',todayDo:'To do',todayGesture:'One small step',redoCheckin:'Retake my check-in',todayEpds:'Mood self-screen',todayNeedTag:'Need',villageTitle:'My village',villageHint:'Two or three people you can call or message. They appear under your day plan.',villageName:'Name',villagePhone:'Phone',villageCall:'Call',villageMessage:'Message',villageSaved:'Village saved',savedTitle:'Saved for later',saveAdd:'Save for later',saveAdded:'Saved ✓',saveRemoved:'Removed from saved',gentleMoments:'Gentle moments',chooseNeed:'Choose what you need',moveTitle:'Move with care',moveSub:'10–15 min recovery',breatheTitle:'Breathe with me',breatheSub:'2 min nervous-system pause',journalTitle:'A quiet page',journalSub:'Guided reflection',epdsTitle:'Mood self-screen',epdsSub:'EPDS · about 3 min',redFlags:'Heavy bleeding, chest pain, trouble breathing, severe headache, fever, calf pain/swelling, or thoughts of harm need urgent clinical help—not an app.',todaysPlan:'Today’s gentle plan',heard:'I hear you',gentleTag:'Gentle pace',breathTag:'Breath-led',adaptTag:'Easy to pause',startSession:'Start this session',talkFirst:'I’d rather talk first',sessionLibrary:'Recovery library',selectedForYou:'Selected for today',sessionIntro:'Move slowly and stay below any pain. Your breath—not the timer—sets the pace.',sessionName:'Reconnect & restore',sessionMeta:'Postpartum Pilates · no equipment',ex1:'360° rib breathing',ex1d:'Supported side-lying · 2 min',ex2:'Heel slides with exhale',ex2d:'Slow alternating sides · 3 min',ex3:'Bridge preparation',ex3d:'Pelvic floor release first · 3 min',ex4:'Resting body scan',ex4d:'Feet up, jaw soft · 4 min',movementBoundary:'Stop with pain, pressure/heaviness, bulging, dizziness, bleeding that increases, or leaking that worries you. Contact your pelvic-health clinician for assessment.',begin12:'Begin 12-minute session',nowMoving:'Now moving',cue1:'Let the back and sides of your ribs widen. Nothing to force.',playerSafety:'Illustrative movement only. Pause whenever you need. Seek clinical guidance before returning to exercise after complications or if symptoms are present.',concierge:'Mon Village',chatStatus:'Scripted wellness guidance · available anytime',items:'items',selfScreen:'Self-screen, not diagnosis',epdsHead:'A private check on how you’ve felt.',epdsBody:'The Edinburgh Postnatal Depression Scale asks about the past 7 days. Choose the answer closest to how you have felt—not how you think you should feel.',epdsPoint1:'Your score is guidance, never a diagnosis.',epdsPoint2:'Any concern matters, whatever the number.',epdsPoint3:'A harm-related answer always opens immediate support.',startScreen:'Start self-screen',twoMinute:'2-minute reset',makeSpace:'Make a little space',breathHead:'Nothing to fix. Just this breath.',breathBody:'Inhale gently for 4, pause for 4, then exhale for 6. Skip the hold if it feels uncomfortable.',ready:'Ready',startBreathing:'Start breathing',privateMoment:'A private moment',todayPrompt:'Today’s prompt',prompt:'What do I need someone to understand about today?',journalHelp:'No polishing. A sentence is enough. This entry stays only in this open page unless you copy or download it.',writeHere:'Write here',journalPlaceholder:'Today feels…',copy:'Copy',download:'Download note',careSafety:'Care & safety',knowWhen:'Know when to reach out.',urgentTitle:'Get urgent medical help now',urgentBody:'Heavy or sudden bleeding, chest pain, trouble breathing, seizures, fainting, severe headache with vision changes, fever with feeling very unwell, or one-sided calf swelling/pain.',showUrgent:'Show urgent contacts',bookTitle:'Book a clinician check',bookBody:'New or increasing pelvic pressure/bulging, wound concerns, persistent pain, painful feeding, incontinence that worries you, or low mood/anxiety affecting daily life.',scopeTitle:'What this companion can—and cannot—do',scopeBody:'It can offer education, reflection and gentle wellness practices. It cannot assess your body, diagnose a condition, provide therapy, prescribe treatment, or manage an emergency.',navHome:'Home',navChat:'Ask',navMove:'Move',navCare:'Care',needsEyebrow:'Your village responds',needsTitle:'What do you need right now?',villageEyebrow:'Your village',rightNow:'Right now',whoCanHelp:'People who can help',comingSoon:"Coming soon — Amandine's picks",dirIbclcTitle:'IBCLC lactation consultants',dirIbclcSub:'Video visits, and in person in New York.',dirPtTitle:'Pelvic-floor physical therapists',dirPtSub:'In person in New York City, some by video.',dirOfficial:'Official directories',dirNote:"Amandine's picks, verified November 2026. Prices and insurance change, check with the provider before booking.",dirTele:'Telehealth',dirInPerson:'In person',dirFrench:'French',dirSite:'Website',backToNeeds:'All needs',editBtn:'Edit text',pinTitle:'Enter your edit PIN',pinPlaceholder:'4-digit PIN',pinOk:'Edit',pinCancel:'Cancel',wrongPin:'Wrong PIN — try again',publish:'Publish ✓',published:'Live — your changes are on the site',exitEdit:'Done',triageTitle:'I don’t know — just help me',triageSub:'We’ll figure it out together',triageEyebrow:'A gentle triage',triageHead:'What’s happening?',triBody:'My body',triBaby:'My baby',triEmo:'My emotions',triSleep:'I can’t sleep',triScared:'I’m scared',triSomeone:'I need someone',triIdk:'I don’t know',lvlGreenT:'Everyday support',lvlGreenB:'The app can help with:',green1:'Recovery',green2:'Movement',green3:'Breathing',green4:'Sleep',green5:'Feeding guidance',green6:'Organization',green7:'Resources',lvlOrangeT:'Please contact your healthcare provider',orange1:'Persistent symptoms',orange2:'Significant anxiety',orange3:'Worsening mood',orange4:'Unusual pain',orange5:'Difficulty functioning',orange6:'Symptoms needing medical assessment',lvlRedT:'This needs immediate help',lvlRedB:'This can be a medical emergency. Contact emergency services now.',planTag:'My village, on one page',planEyebrow:'Postpartum care plan',planTitle:'My care plan',planCardT:'My care plan',planCardS:'Your village, on one page',planBefore:'Before baby arrives',planF1:'Support person',planF2:'Who can come at night',planF3:'Who can bring food',planF4:'Who can watch older siblings',planF5:'My OB / midwife',planF6:'My pediatrician',planF7:'Insurance',planF8:'Mental-health resources available to me',roadmapT:'My postpartum roadmap',roadmapIntro:'Fill this in before baby arrives (or in the first days), and come back to it when you feel lost. This isn\'t a contract: cross things out, change it, start over.',roadmapF1:'My signals when I\'m overwhelmed',roadmapH1:'Everyone\'s are different. Naming them is already taking back control. Examples: I cry for no clear reason · I can\'t sleep even when the baby sleeps · everything irritates me · I don\'t want to see anyone',roadmapF2:'My go-to people',roadmapH2:'The ones already in your postpartum care plan: copy the 2-3 you\'ll turn to first here.',roadmapF3:'My non-negotiables',roadmapH3:'2 or 3 small things that keep you afloat. Not goals, lifebuoys. Examples: one shower a day · one hot meal · 10 minutes outside',roadmapF4:'If I\'m overwhelmed, I will…',roadmapH4:'3 steps, in order, decided with a clear head. E.g.: 1. I pause (I put the baby down somewhere safe and step out for 5 minutes) · 2. I call… · 3. If it doesn\'t lift (I call my midwife / my doctor)',roadmapF5:'A note to my future self',roadmapH5:'Write it the way you\'d talk to a friend. E.g.: "You\'re learning, and it\'s normal that it\'s hard."',roadmapOutro:'This plan can change. Cross it out as much as you like: it\'s a compass, not a contract.',planPartnerT:'If I’m not doing well, I want my partner to…',planP1:'Call my doctor',planP2:'Stay with me',planP3:'Call my mother',planP4:'Take over baby care',planP5:'Help me get medical attention',planSave:'Save my plan',planSaved:'Plan saved — your village, on one page.',planCopy:'Copy plan',planCopied:'Plan copied.',planCopyFail:'Copy isn’t available here.',planEdit:'Edit',planEmpty:'Nothing filled in yet — your plan will appear here.',planSummaryT:'My village, on one page',tileBody:'My body',tileBaby:'My baby',tileEmotions:'My emotions',tileSleep:'I can’t sleep',tileScared:'I’m scared',tileHelp:'I need help',tileIdk:'I don’t know',seeAllNeeds:'See all needs',relatedTitle:'Related',tStoriesTile:'Stories',tStoriesTitle:'Stories',tStoriesSub:'Real stories, checked for accuracy.',tMinRead:'min read',searchPlaceholder:'Search by symptom…',searchResults:'Results',searchNoResults:'No guide matches that yet. Try different words, or talk with Mon Village.',searchUrgent:'This sounds urgent. Check the warning signs first, and call 911 if you need help right now.',searchTalk:'Talk with Mon Village',searchClear:'Clear search',tRelatedStories:'Related stories',tArticles:'Articles',tAllStories:'All stories',resDialogTitle:'Add a resource',resLabel:'Name',resNote:'Description',resUrl:'Link (https://…)',resSave:'Save',resReset:'Reset to coming soon',resCancel:'Cancel',editHintRes:'Tap text to edit · Tap 🔗 on a resource to add a link',gBody:'My body',gBaby:'My baby',gEmo:'My emotions',gRest:'Rest',notSure:'Not sure? Talk with Mon Village →',programLibrary:'Restore program',programEyebrow:'Your restore program',programTitle:'Rebuild week by week.',programIntro:"Real videos from Amandine's postnatal program, organised by week. Pick by time, intensity or topic — or play the full series.",myWeek:'My week postpartum',youAreHere:'You are here',playSeries:'▶ Play full series',weekSaved:'Program set for your week ✓',villageGuideEyebrow:'Your village guide',villageGuideTitle:'Your village, in practice',villageGuideIntro:'One guide to build your support system: who to call, which paid help is worth it, and how to choose who you let in.'},
-    fr:{prototype:'Prototype cliquable · Contenu bien-être illustratif',welcomeTag:'Un espace tout en douceur',welcomeTitle:'Prendre soin de vous, entre deux moments.',welcomeCopy:'Mon Village par Empowered Maman est un compagnon post-partum apaisant pour écouter votre corps, bouger doucement et respirer—jour et nuit.',welcomeBoundary:'Soutien bien-être et éducatif uniquement—ceci n’est pas un dispositif médical, une thérapie, un diagnostic, des soins d’urgence ni un remplacement de votre professionnel de santé.',begin:'Commencer',aboutYou:'À propos de vous',meetTitle:'Partons de là où vous en êtes aujourd’hui.',nameLabel:'Votre prénom',stageLabel:'Âge du bébé / étape post-partum',stage1:'0–6 semaines',stage2:'7–12 semaines',stage3:'3–6 mois',stage4:'6 mois et +',stage5:'Enceinte / en préparation',birthLabel:'Type d’accouchement',birth1:'Voie basse',birth2:'Césarienne',birth3:'Instrumental',birth4:'Je préfère ne pas dire',continue:'Continuer',supportSettings:'Vos préférences',settingsTitle:'Un soutien qui vous ressemble.',languageLabel:'Langue préférée',countryLabel:'Pays pour les ressources urgentes',otherCountry:'Autre pays',boundary:'Soutien bien-être uniquement. Ce prototype ne fournit ni thérapie, ni diagnostic, ni soins d’urgence et ne remplace pas un professionnel de santé.',enter:'Entrer dans mon village',dailyCare:'Votre soin du jour',checkTitle:'Comment allez-vous, vraiment ?',checkCopy:'Un bilan de 60 secondes adapte le mouvement et le soutien à votre journée.',checkCta:'Faire mon bilan',todayPlanEyebrow:'Ton plan du jour',todayRead:'À lire',todayDo:'À faire',todayGesture:'Un petit geste',redoCheckin:'Refaire mon bilan',todayEpds:'Auto-évaluation humeur',todayNeedTag:'Besoin',villageTitle:'Mon village',villageHint:'Deux ou trois personnes à appeler ou à qui écrire. Elles apparaissent sous ton plan du jour.',villageName:'Nom',villagePhone:'Téléphone',villageCall:'Appeler',villageMessage:'Message',villageSaved:'Village enregistré',savedTitle:'À relire',saveAdd:'Garder pour plus tard',saveAdded:'Enregistré ✓',saveRemoved:'Retiré de ta liste',gentleMoments:'Moments de douceur',chooseNeed:'Choisissez votre besoin',moveTitle:'Bouger en douceur',moveSub:'Récupération · 10–15 min',breatheTitle:'Respirer avec moi',breatheSub:'Pause nerveuse · 2 min',journalTitle:'Une page pour soi',journalSub:'Réflexion guidée',epdsTitle:'Auto-évaluation humeur',epdsSub:'EPDS · environ 3 min',redFlags:'Saignement abondant, douleur thoracique, difficulté à respirer, mal de tête intense, fièvre, douleur/gonflement du mollet ou pensées d’automutilation nécessitent une aide clinique urgente—pas une appli.',todaysPlan:'Votre programme doux',heard:'Je vous entends',gentleTag:'Rythme doux',breathTag:'Guidé par le souffle',adaptTag:'Facile à interrompre',startSession:'Commencer cette séance',talkFirst:'Je préfère parler d’abord',sessionLibrary:'Bibliothèque récupération',selectedForYou:'Choisie pour aujourd’hui',sessionIntro:'Bougez lentement, sans entrer dans la douleur. Votre souffle—not le chrono—donne le rythme.',sessionName:'Reconnecter & restaurer',sessionMeta:'Pilates post-partum · sans matériel',ex1:'Respiration costale à 360°',ex1d:'Allongée sur le côté · 2 min',ex2:'Glissés de talon en expirant',ex2d:'Alternez lentement · 3 min',ex3:'Préparation du pont',ex3d:'Relâchez le périnée d’abord · 3 min',ex4:'Scan corporel au repos',ex4d:'Pieds surélevés, mâchoire détendue · 4 min',movementBoundary:'Arrêtez en cas de douleur, lourdeur/pression, sensation de boule, vertiges, saignement accru ou fuite préoccupante. Contactez un professionnel de santé pelvienne.',begin12:'Commencer la séance de 12 min',nowMoving:'Mouvement en cours',cue1:'Laissez l’arrière et les côtés des côtes s’ouvrir. Rien à forcer.',playerSafety:'Mouvement illustratif uniquement. Faites une pause dès que nécessaire. Demandez un avis clinique avant la reprise après des complications ou en présence de symptômes.',concierge:'Mon Village',chatStatus:'Conseils bien-être pré-écrits · disponible à tout moment',items:'questions',selfScreen:'Auto-évaluation, pas un diagnostic',epdsHead:'Un point intime sur votre ressenti.',epdsBody:'L’échelle de dépression postnatale d’Édimbourg porte sur les 7 derniers jours. Choisissez la réponse la plus proche de votre vécu.',epdsPoint1:'Votre score est un repère, jamais un diagnostic.',epdsPoint2:'Toute inquiétude compte, quel que soit le chiffre.',epdsPoint3:'Toute réponse liée à l’automutilation ouvre un soutien immédiat.',startScreen:'Commencer l’auto-évaluation',twoMinute:'Pause de 2 minutes',makeSpace:'Créer un peu d’espace',breathHead:'Rien à réparer. Juste ce souffle.',breathBody:'Inspirez doucement sur 4, pause sur 4, puis expirez sur 6. Sautez la pause si elle est inconfortable.',ready:'Prête',startBreathing:'Commencer à respirer',privateMoment:'Un moment privé',todayPrompt:'Question du jour',prompt:'Qu’aimerais-je que quelqu’un comprenne de ma journée ?',journalHelp:'Pas besoin de bien écrire. Une phrase suffit. Ce texte reste sur cette page, sauf si vous le copiez ou le téléchargez.',writeHere:'Écrire ici',journalPlaceholder:'Aujourd’hui, je me sens…',copy:'Copier',download:'Télécharger la note',careSafety:'Soin & sécurité',knowWhen:'Savoir quand demander de l’aide.',urgentTitle:'Obtenir une aide médicale urgente',urgentBody:'Saignement abondant ou soudain, douleur thoracique, difficulté à respirer, convulsions, évanouissement, mal de tête sévère avec troubles visuels, fièvre avec grand malaise, ou douleur/gonflement d’un seul mollet.',showUrgent:'Voir les contacts urgents',bookTitle:'Prendre rendez-vous',bookBody:'Pression ou sensation de boule pelvienne nouvelle/croissante, souci de cicatrice, douleur persistante, alimentation douloureuse, incontinence préoccupante, ou humeur basse/anxiété qui gêne la vie quotidienne.',scopeTitle:'Ce que ce compagnon peut—et ne peut pas—faire',scopeBody:'Il peut offrir de l’information, de la réflexion et des pratiques douces de bien-être. Il ne peut pas examiner votre corps, diagnostiquer, fournir une thérapie, prescrire ni gérer une urgence.',navHome:'Accueil',navChat:'Parler',navMove:'Bouger',navCare:'Aide',needsEyebrow:'Votre village répond',needsTitle:"De quoi avez-vous besoin ?",villageEyebrow:'Votre village',rightNow:"Pour l'instant",whoCanHelp:'Des personnes pour vous aider',comingSoon:"Bientôt — les adresses d'Amandine",dirIbclcTitle:'Consultantes en lactation IBCLC',dirIbclcSub:'En visio, et en cabinet à New York.',dirPtTitle:'Kinés du périnée',dirPtSub:'En cabinet à New York, certaines en visio.',dirOfficial:'Annuaires officiels',dirNote:'Les adresses d’Amandine, vérifiées en novembre 2026. Les tarifs et les assurances changent, vérifiez auprès du praticien avant de réserver.',dirTele:'Téléconsultation',dirInPerson:'En cabinet',dirFrench:'Français',dirSite:'Site web',backToNeeds:'Tous les besoins',editBtn:'Modifier le texte',pinTitle:'Entrez votre code',pinPlaceholder:'Code à 4 chiffres',pinOk:'Modifier',pinCancel:'Annuler',wrongPin:'Code incorrect — réessayez',publish:'Publier ✓',published:'En ligne — vos changements sont publiés',exitEdit:'Terminé',triageTitle:'Je ne sais pas — aidez-moi',triageSub:'On va comprendre ensemble',triageEyebrow:'Un tri tout doux',triageHead:'Que se passe-t-il ?',triBody:'Mon corps',triBaby:'Mon bébé',triEmo:'Mes émotions',triSleep:'Je n’arrive pas à dormir',triScared:'J’ai peur',triSomeone:'J’ai besoin de quelqu’un',triIdk:'Je ne sais pas',lvlGreenT:'Soutien du quotidien',lvlGreenB:'L’appli peut aider pour :',green1:'Récupération',green2:'Mouvement',green3:'Respiration',green4:'Sommeil',green5:'Conseils alimentation',green6:'Organisation',green7:'Ressources',lvlOrangeT:'Contactez votre professionnel de santé',orange1:'Symptômes persistants',orange2:'Anxiété importante',orange3:'Humeur qui se dégrade',orange4:'Douleur inhabituelle',orange5:'Difficultés à fonctionner',orange6:'Symptômes nécessitant une évaluation médicale',lvlRedT:'Ceci nécessite une aide immédiate',lvlRedB:'Cela peut être une urgence médicale. Contactez les urgences maintenant.',planTag:'Mon village, sur une page',planEyebrow:'Plan de soins post-partum',planTitle:'Mon plan de soins',planCardT:'Mon plan de soins',planCardS:'Votre village, sur une page',planBefore:'Avant l’arrivée de bébé',planF1:'Personne de confiance',planF2:'Qui peut venir la nuit',planF3:'Qui peut apporter des repas',planF4:'Qui peut garder les aînés',planF5:'Mon gynéco / ma sage-femme',planF6:'Mon pédiatre',planF7:'Mutuelle / assurance',planF8:'Ressources santé mentale à ma disposition',roadmapT:'Ma feuille de route post-partum',roadmapIntro:'À remplir avant l\'arrivée de bébé (ou dès les premiers jours), à relire quand tu te sens perdue. Ce n\'est pas un contrat : rature, modifie, recommence.',roadmapF1:'Mes signaux quand ça déborde',roadmapH1:'Chacune a les siens. Les reconnaître, c\'est déjà reprendre la main. Exemples : je pleure sans raison précise · je n\'arrive plus à dormir même quand le bébé dort · tout m\'irrite · je n\'ai plus envie de voir personne',roadmapF2:'Mes personnes ressources',roadmapH2:'Celles déjà notées dans ton plan de post-partum : recopie ici les 2-3 vers qui te tourner en premier.',roadmapF3:'Mes non-négociables',roadmapH3:'2 ou 3 petites choses qui te maintiennent à flot. Pas des objectifs, des bouées. Exemples : une douche par jour · un repas chaud · 10 minutes dehors',roadmapF4:'Si je suis submergée, je…',roadmapH4:'3 étapes, dans l\'ordre, décidées à froid. Ex : 1. Je fais une pause (je pose le bébé en sécurité et je sors 5 minutes) · 2. J\'appelle… · 3. Si ça ne passe pas (j\'appelle ma sage-femme / mon médecin)',roadmapF5:'Une phrase pour mon moi futur',roadmapH5:'Écris-la comme tu parlerais à une amie. Ex : « Tu es en train d\'apprendre, et c\'est normal que ce soit dur. »',roadmapOutro:'Ce plan peut changer. Rature-le autant que tu veux : c\'est une boussole, pas un contrat.',planPartnerT:'Si je ne vais pas bien, je veux que mon partenaire…',planP1:'Appeler mon médecin',planP2:'Rester avec moi',planP3:'Appeler ma mère',planP4:'Prendre le relais pour bébé',planP5:'M’aider à obtenir des soins',planSave:'Enregistrer mon plan',planSaved:'Plan enregistré — votre village, sur une page.',planCopy:'Copier le plan',planCopied:'Plan copié.',planCopyFail:'Copie indisponible ici.',planEdit:'Modifier',planEmpty:'Rien n’est encore rempli — votre plan apparaîtra ici.',planSummaryT:'Mon village, sur une page',tileBody:'Mon corps',tileBaby:'Mon bébé',tileEmotions:'Mes émotions',tileSleep:'Je n’arrive pas à dormir',tileScared:'J’ai peur',tileHelp:'J’ai besoin d’aide',tileIdk:'Je ne sais pas',seeAllNeeds:'Voir tous les besoins',relatedTitle:'Voir aussi',tStoriesTile:'Témoignages',tStoriesTitle:'Témoignages',tStoriesSub:'Des histoires vraies, vérifiées',tMinRead:'min de lecture',searchPlaceholder:'Rechercher par symptôme…',searchResults:'Résultats',searchNoResults:'Aucun guide ne correspond pour l’instant. Essaie d’autres mots, ou parle avec Mon Village.',searchUrgent:'Ça ressemble à une urgence. Vérifie les signes d’alerte d’abord, et appelle le 911 si tu as besoin d’aide tout de suite.',searchTalk:'Parler avec Mon Village',searchClear:'Effacer la recherche',tRelatedStories:'Témoignages liés',tArticles:'Articles',tAllStories:'Toutes les histoires',resDialogTitle:'Ajouter une ressource',resLabel:'Nom',resNote:'Description',resUrl:'Lien (https://…)',resSave:'Enregistrer',resReset:'Revenir à « bientôt »',resCancel:'Annuler',editHintRes:'Touchez un texte pour le modifier · Touchez 🔗 pour ajouter un lien',gBody:'Mon corps',gBaby:'Mon bébé',gEmo:'Mes émotions',gRest:'Repos',notSure:'Vous hésitez ? Parlez avec Mon Village →',programLibrary:'Programme de récupération',programEyebrow:'Votre programme de récupération',programTitle:'Reconstruisez semaine après semaine.',programIntro:"Les vraies vidéos du programme postnatal d'Amandine, organisées par semaine. Choisissez selon le temps, l'intensité ou le sujet — ou lisez la série complète.",myWeek:'Ma semaine post-partum',youAreHere:'Vous êtes ici',playSeries:'▶ Lire la série complète',weekSaved:'Programme ajusté à votre semaine ✓',villageGuideEyebrow:'Le guide du village',villageGuideTitle:'Ton village, en pratique',villageGuideIntro:'Un guide pour construire ton système de soutien : qui appeler, les aides payantes qui valent le coup, et comment choisir qui tu laisses entrer.'}
+    en:{prototype:'Clickable prototype · Illustrative wellness content',welcomeTag:'A gentle place to land',welcomeTitle:'Care for you, in the moments between.',welcomeCopy:'Mon Village by Empowered Maman is a calm postpartum companion for body check-ins, short movement, and a little breathing room—day or night.',welcomeBoundary:'Wellness and educational support only—not a medical device, therapy, diagnosis, emergency care, or a replacement for your clinician.',begin:'Begin',aboutYou:'About you',meetTitle:'Let’s meet where you are today.',nameLabel:'Your first name',stageLabel:'Baby’s age / postpartum stage',stage1:'0–6 weeks',stage2:'7–12 weeks',stage3:'3–6 months',stage4:'6+ months',stage5:'Pregnant / preparing',birthLabel:'Birth experience',birth1:'Vaginal',birth2:'Cesarean',birth3:'Assisted',birth4:'Prefer not to say',continue:'Continue',supportSettings:'Support settings',settingsTitle:'Make support feel familiar.',languageLabel:'Preferred language',countryLabel:'Country for urgent resources',otherCountry:'Other country',boundary:'Wellness support only. This prototype does not provide therapy, diagnosis, emergency care, or replace your clinician.',enter:'Enter your village',dailyCare:'Today’s care',checkTitle:'How are you, really?',checkCopy:'A 60-second check-in helps shape movement and support for today.',checkCta:'Check in now',todayPlanEyebrow:'Your plan for today',todayRead:'To read',todayDo:'To do',todayGesture:'One small step',redoCheckin:'Retake my check-in',todayEpds:'Mood self-screen',todayNeedTag:'Need',villageTitle:'My village',villageHint:'Two or three people you can call or message. They appear under your day plan.',villageName:'Name',villagePhone:'Phone',villageCall:'Call',villageMessage:'Message',villageSaved:'Village saved',savedTitle:'Saved for later',saveAdd:'Save for later',saveAdded:'Saved ✓',saveRemoved:'Removed from saved',gentleMoments:'Gentle moments',chooseNeed:'Choose what you need',moveTitle:'Move with care',moveSub:'10–15 min recovery',breatheTitle:'Breathe with me',breatheSub:'2 min nervous-system pause',journalTitle:'A quiet page',journalSub:'Guided reflection',epdsTitle:'Mood self-screen',epdsSub:'EPDS · about 3 min',redFlags:'Heavy bleeding, chest pain, trouble breathing, severe headache, fever, calf pain/swelling, or thoughts of harm need urgent clinical help—not an app.',todaysPlan:'Today’s gentle plan',heard:'I hear you',gentleTag:'Gentle pace',breathTag:'Breath-led',adaptTag:'Easy to pause',startSession:'Start this session',talkFirst:'I’d rather talk first',sessionLibrary:'Recovery library',selectedForYou:'Selected for today',sessionIntro:'Move slowly and stay below any pain. Your breath—not the timer—sets the pace.',sessionName:'Reconnect & restore',sessionMeta:'Postpartum Pilates · no equipment',ex1:'360° rib breathing',ex1d:'Supported side-lying · 2 min',ex2:'Heel slides with exhale',ex2d:'Slow alternating sides · 3 min',ex3:'Bridge preparation',ex3d:'Pelvic floor release first · 3 min',ex4:'Resting body scan',ex4d:'Feet up, jaw soft · 4 min',movementBoundary:'Stop with pain, pressure/heaviness, bulging, dizziness, bleeding that increases, or leaking that worries you. Contact your pelvic-health clinician for assessment.',begin12:'Begin 12-minute session',nowMoving:'Now moving',cue1:'Let the back and sides of your ribs widen. Nothing to force.',playerSafety:'Illustrative movement only. Pause whenever you need. Seek clinical guidance before returning to exercise after complications or if symptoms are present.',concierge:'Mon Village',chatStatus:'Scripted wellness guidance · available anytime',items:'items',selfScreen:'Self-screen, not diagnosis',epdsHead:'A private check on how you’ve felt.',epdsBody:'The Edinburgh Postnatal Depression Scale asks about the past 7 days. Choose the answer closest to how you have felt—not how you think you should feel.',epdsPoint1:'Your score is guidance, never a diagnosis.',epdsPoint2:'Any concern matters, whatever the number.',epdsPoint3:'A harm-related answer always opens immediate support.',startScreen:'Start self-screen',twoMinute:'2-minute reset',makeSpace:'Make a little space',breathHead:'Nothing to fix. Just this breath.',breathBody:'Inhale gently for 4, pause for 4, then exhale for 6. Skip the hold if it feels uncomfortable.',ready:'Ready',startBreathing:'Start breathing',privateMoment:'A private moment',todayPrompt:'Today’s prompt',prompt:'What do I need someone to understand about today?',journalHelp:'No polishing. A sentence is enough. This entry stays only in this open page unless you copy or download it.',writeHere:'Write here',journalPlaceholder:'Today feels…',copy:'Copy',download:'Download note',careSafety:'Care & safety',knowWhen:'Know when to reach out.',urgentTitle:'Get urgent medical help now',urgentBody:'Heavy or sudden bleeding, chest pain, trouble breathing, seizures, fainting, severe headache with vision changes, fever with feeling very unwell, or one-sided calf swelling/pain.',showUrgent:'Show urgent contacts',bookTitle:'Book a clinician check',bookBody:'New or increasing pelvic pressure/bulging, wound concerns, persistent pain, painful feeding, incontinence that worries you, or low mood/anxiety affecting daily life.',scopeTitle:'What this companion can—and cannot—do',scopeBody:'It can offer education, reflection and gentle wellness practices. It cannot assess your body, diagnose a condition, provide therapy, prescribe treatment, or manage an emergency.',navHome:'Home',navChat:'Ask',navMove:'Move',navCare:'Care',needsEyebrow:'Your village responds',needsTitle:'What do you need right now?',villageEyebrow:'Your village',rightNow:'Right now',whoCanHelp:'People who can help',comingSoon:"Coming soon — Amandine's picks",dirIbclcTitle:'IBCLC lactation consultants',dirIbclcSub:'Video visits, and in person in New York.',dirPtTitle:'Pelvic-floor physical therapists',dirPtSub:'In person in New York City, some by video.',dirOfficial:'Official directories',dirNote:"Amandine's picks, verified November 2026. Prices and insurance change, check with the provider before booking.",dirTele:'Telehealth',dirInPerson:'In person',dirFrench:'French',dirSite:'Website',backToNeeds:'All needs',editBtn:'Edit text',pinTitle:'Enter your edit PIN',pinPlaceholder:'4-digit PIN',pinOk:'Edit',pinCancel:'Cancel',wrongPin:'Wrong PIN — try again',publish:'Publish ✓',published:'Live — your changes are on the site',exitEdit:'Done',triageTitle:'I don’t know — just help me',triageSub:'We’ll figure it out together',triageEyebrow:'A gentle triage',triageHead:'What’s happening?',triBody:'My body',triBaby:'My baby',triEmo:'My emotions',triSleep:'I can’t sleep',triScared:'I’m scared',triSomeone:'I need someone',triIdk:'I don’t know',lvlGreenT:'Everyday support',lvlGreenB:'The app can help with:',green1:'Recovery',green2:'Movement',green3:'Breathing',green4:'Sleep',green5:'Feeding guidance',green6:'Organization',green7:'Resources',lvlOrangeT:'Please contact your healthcare provider',orange1:'Persistent symptoms',orange2:'Significant anxiety',orange3:'Worsening mood',orange4:'Unusual pain',orange5:'Difficulty functioning',orange6:'Symptoms needing medical assessment',lvlRedT:'This needs immediate help',lvlRedB:'This can be a medical emergency. Contact emergency services now.',planTag:'My village, on one page',planEyebrow:'Postpartum care plan',planTitle:'My care plan',planCardT:'My care plan',planCardS:'Your village, on one page',planBefore:'Before baby arrives',planF1:'Support person',planF2:'Who can come at night',planF3:'Who can bring food',planF4:'Who can watch older siblings',planF5:'My OB / midwife',planF6:'My pediatrician',planF7:'Insurance',planF8:'Mental-health resources available to me',roadmapT:'My postpartum roadmap',roadmapIntro:'Fill this in before baby arrives (or in the first days), and come back to it when you feel lost. This isn\'t a contract: cross things out, change it, start over.',roadmapF1:'My signals when I\'m overwhelmed',roadmapH1:'Everyone\'s are different. Naming them is already taking back control. Examples: I cry for no clear reason · I can\'t sleep even when the baby sleeps · everything irritates me · I don\'t want to see anyone',roadmapF2:'My go-to people',roadmapH2:'The ones already in your postpartum care plan: copy the 2-3 you\'ll turn to first here.',roadmapF3:'My non-negotiables',roadmapH3:'2 or 3 small things that keep you afloat. Not goals, lifebuoys. Examples: one shower a day · one hot meal · 10 minutes outside',roadmapF4:'If I\'m overwhelmed, I will…',roadmapH4:'3 steps, in order, decided with a clear head. E.g.: 1. I pause (I put the baby down somewhere safe and step out for 5 minutes) · 2. I call… · 3. If it doesn\'t lift (I call my midwife / my doctor)',roadmapF5:'A note to my future self',roadmapH5:'Write it the way you\'d talk to a friend. E.g.: "You\'re learning, and it\'s normal that it\'s hard."',roadmapOutro:'This plan can change. Cross it out as much as you like: it\'s a compass, not a contract.',planPartnerT:'If I’m not doing well, I want my partner to…',planP1:'Call my doctor',planP2:'Stay with me',planP3:'Call my mother',planP4:'Take over baby care',planP5:'Help me get medical attention',planSave:'Save my plan',planSaved:'Plan saved — your village, on one page.',planCopy:'Copy plan',planCopied:'Plan copied.',planCopyFail:'Copy isn’t available here.',planEdit:'Edit',planEmpty:'Nothing filled in yet — your plan will appear here.',planSummaryT:'My village, on one page',tileBody:'My body',tileBaby:'My baby',tileEmotions:'My emotions',tileSleep:'I can’t sleep',tileScared:'I’m scared',tileHelp:'I need help',tileIdk:'I don’t know',seeAllNeeds:'See all needs',relatedTitle:'Related',tStoriesTile:'Stories',tStoriesTitle:'Stories',tStoriesSub:'Real stories, checked for accuracy.',tMinRead:'min read',searchPlaceholder:'Search by symptom…',searchResults:'Results',searchNoResults:'No guide matches that yet. Try different words, or talk with Mon Village.',searchUrgent:'This sounds urgent. Check the warning signs first, and call 911 if you need help right now.',searchTalk:'Talk with Mon Village',searchClear:'Clear search',tRelatedStories:'Related stories',tArticles:'Articles',tAllStories:'All stories',resDialogTitle:'Add a resource',resLabel:'Name',resNote:'Description',resUrl:'Link (https://…)',resSave:'Save',resReset:'Reset to coming soon',resCancel:'Cancel',editHintRes:'Tap text to edit · Tap 🔗 on a resource to add a link',gBody:'My body',gBaby:'My baby',gEmo:'My emotions',gRest:'Rest',notSure:'Not sure? Talk with Mon Village →',programLibrary:'Restore program',programEyebrow:'Your restore program',programTitle:'Rebuild week by week.',programIntro:"Real videos from Amandine's postnatal program, organised by week. Pick by time, intensity or topic — or play the full series.",myWeek:'My week postpartum',youAreHere:'You are here',playSeries:'▶ Play full series',weekSaved:'Program set for your week ✓',villageGuideEyebrow:'Your village guide',villageGuideTitle:'Your village, in practice',villageGuideIntro:'One guide to build your support system: who to call, which paid help is worth it, and how to choose who you let in.',
+    tlTitle:"Your baby's timeline",
+    tlIntro:"Enter your baby's birth date, and Mon Village shows the appointments not to miss during the first year, for your baby and for you.",
+    tlBirthPrompt:"What is your baby's birth date?",
+    tlPrivacy:"This date stays on your phone. Nothing is sent anywhere, nothing is shared.",
+    tlSeeAll:"See the full timeline",
+    tlAddCal:"Add to my calendar",
+    tlIcsDone:"Calendar file downloaded",
+    tlMarkDone:"Mark as done",
+    tlDone:"Done",
+    tlTodo:"To do",
+    tlForBaby:"For your baby",
+    tlForYou:"For you",
+    tlMomNote:"It is no longer a single visit at 6 weeks: current guidance describes care in several steps.",
+    tlVaccinesLabel:"Vaccines recommended at this age",
+    tlVaccinesNote:"The vaccines listed here are the ones the schedule recommends at each age, and what they protect against. If you have questions about vaccines, or want to talk it through before deciding, bring it up with your pediatrician: they can answer and adapt the schedule to your baby.",
+    tlCaveat1:"Your pediatrician may adjust these dates for your baby. This timeline is a guide, not a prescription.",
+    tlCaveat2:"For vaccines, the American Academy of Pediatrics publishes its own 2026 schedule, slightly different from the federal health authorities (CDC). Your pediatrician's plan is the one that counts.",
+    tlSourcesBody:"American Academy of Pediatrics Bright Futures periodicity schedule; CDC child immunization schedule; ACOG Committee Opinion 736, Optimizing Postpartum Care, 2018.",
+    tlConfirmTime:"Confirm the time with the office.",
+    tlMomContactNote:"If it is not done yet, contact your provider this week.",
+    tlAddBirth:"Add your baby's birth date to see the appointments to come.",
+    esTitle:"Baby essentials",
+    esIntro:"Check what you still have. When something is running low, it moves to your shopping list.",
+    esHint:"Tap an item to change its stock level.",
+    esShopTitle:"My shopping list",
+    esShopEmpty:"Nothing to restock right now.",
+    esCopy:"Copy the list",
+    esCopied:"List copied.",
+    esBought:"Mark as bought",
+    esReset:"Reset all",
+    esStockOk:"In stock",
+    esStockLow:"Running low",
+    esStockBuy:"Buy again",
+    esRestock:"items to restock.",
+    esRestockOne:"item to restock.",
+    esSourcesBody:"American Academy of Pediatrics recommendation on vitamin D (400 IU a day for babies)."},
+    fr:{prototype:'Prototype cliquable · Contenu bien-être illustratif',welcomeTag:'Un espace tout en douceur',welcomeTitle:'Prendre soin de vous, entre deux moments.',welcomeCopy:'Mon Village par Empowered Maman est un compagnon post-partum apaisant pour écouter votre corps, bouger doucement et respirer—jour et nuit.',welcomeBoundary:'Soutien bien-être et éducatif uniquement—ceci n’est pas un dispositif médical, une thérapie, un diagnostic, des soins d’urgence ni un remplacement de votre professionnel de santé.',begin:'Commencer',aboutYou:'À propos de vous',meetTitle:'Partons de là où vous en êtes aujourd’hui.',nameLabel:'Votre prénom',stageLabel:'Âge du bébé / étape post-partum',stage1:'0–6 semaines',stage2:'7–12 semaines',stage3:'3–6 mois',stage4:'6 mois et +',stage5:'Enceinte / en préparation',birthLabel:'Type d’accouchement',birth1:'Voie basse',birth2:'Césarienne',birth3:'Instrumental',birth4:'Je préfère ne pas dire',continue:'Continuer',supportSettings:'Vos préférences',settingsTitle:'Un soutien qui vous ressemble.',languageLabel:'Langue préférée',countryLabel:'Pays pour les ressources urgentes',otherCountry:'Autre pays',boundary:'Soutien bien-être uniquement. Ce prototype ne fournit ni thérapie, ni diagnostic, ni soins d’urgence et ne remplace pas un professionnel de santé.',enter:'Entrer dans mon village',dailyCare:'Votre soin du jour',checkTitle:'Comment allez-vous, vraiment ?',checkCopy:'Un bilan de 60 secondes adapte le mouvement et le soutien à votre journée.',checkCta:'Faire mon bilan',todayPlanEyebrow:'Ton plan du jour',todayRead:'À lire',todayDo:'À faire',todayGesture:'Un petit geste',redoCheckin:'Refaire mon bilan',todayEpds:'Auto-évaluation humeur',todayNeedTag:'Besoin',villageTitle:'Mon village',villageHint:'Deux ou trois personnes à appeler ou à qui écrire. Elles apparaissent sous ton plan du jour.',villageName:'Nom',villagePhone:'Téléphone',villageCall:'Appeler',villageMessage:'Message',villageSaved:'Village enregistré',savedTitle:'À relire',saveAdd:'Garder pour plus tard',saveAdded:'Enregistré ✓',saveRemoved:'Retiré de ta liste',gentleMoments:'Moments de douceur',chooseNeed:'Choisissez votre besoin',moveTitle:'Bouger en douceur',moveSub:'Récupération · 10–15 min',breatheTitle:'Respirer avec moi',breatheSub:'Pause nerveuse · 2 min',journalTitle:'Une page pour soi',journalSub:'Réflexion guidée',epdsTitle:'Auto-évaluation humeur',epdsSub:'EPDS · environ 3 min',redFlags:'Saignement abondant, douleur thoracique, difficulté à respirer, mal de tête intense, fièvre, douleur/gonflement du mollet ou pensées d’automutilation nécessitent une aide clinique urgente—pas une appli.',todaysPlan:'Votre programme doux',heard:'Je vous entends',gentleTag:'Rythme doux',breathTag:'Guidé par le souffle',adaptTag:'Facile à interrompre',startSession:'Commencer cette séance',talkFirst:'Je préfère parler d’abord',sessionLibrary:'Bibliothèque récupération',selectedForYou:'Choisie pour aujourd’hui',sessionIntro:'Bougez lentement, sans entrer dans la douleur. Votre souffle—not le chrono—donne le rythme.',sessionName:'Reconnecter & restaurer',sessionMeta:'Pilates post-partum · sans matériel',ex1:'Respiration costale à 360°',ex1d:'Allongée sur le côté · 2 min',ex2:'Glissés de talon en expirant',ex2d:'Alternez lentement · 3 min',ex3:'Préparation du pont',ex3d:'Relâchez le périnée d’abord · 3 min',ex4:'Scan corporel au repos',ex4d:'Pieds surélevés, mâchoire détendue · 4 min',movementBoundary:'Arrêtez en cas de douleur, lourdeur/pression, sensation de boule, vertiges, saignement accru ou fuite préoccupante. Contactez un professionnel de santé pelvienne.',begin12:'Commencer la séance de 12 min',nowMoving:'Mouvement en cours',cue1:'Laissez l’arrière et les côtés des côtes s’ouvrir. Rien à forcer.',playerSafety:'Mouvement illustratif uniquement. Faites une pause dès que nécessaire. Demandez un avis clinique avant la reprise après des complications ou en présence de symptômes.',concierge:'Mon Village',chatStatus:'Conseils bien-être pré-écrits · disponible à tout moment',items:'questions',selfScreen:'Auto-évaluation, pas un diagnostic',epdsHead:'Un point intime sur votre ressenti.',epdsBody:'L’échelle de dépression postnatale d’Édimbourg porte sur les 7 derniers jours. Choisissez la réponse la plus proche de votre vécu.',epdsPoint1:'Votre score est un repère, jamais un diagnostic.',epdsPoint2:'Toute inquiétude compte, quel que soit le chiffre.',epdsPoint3:'Toute réponse liée à l’automutilation ouvre un soutien immédiat.',startScreen:'Commencer l’auto-évaluation',twoMinute:'Pause de 2 minutes',makeSpace:'Créer un peu d’espace',breathHead:'Rien à réparer. Juste ce souffle.',breathBody:'Inspirez doucement sur 4, pause sur 4, puis expirez sur 6. Sautez la pause si elle est inconfortable.',ready:'Prête',startBreathing:'Commencer à respirer',privateMoment:'Un moment privé',todayPrompt:'Question du jour',prompt:'Qu’aimerais-je que quelqu’un comprenne de ma journée ?',journalHelp:'Pas besoin de bien écrire. Une phrase suffit. Ce texte reste sur cette page, sauf si vous le copiez ou le téléchargez.',writeHere:'Écrire ici',journalPlaceholder:'Aujourd’hui, je me sens…',copy:'Copier',download:'Télécharger la note',careSafety:'Soin & sécurité',knowWhen:'Savoir quand demander de l’aide.',urgentTitle:'Obtenir une aide médicale urgente',urgentBody:'Saignement abondant ou soudain, douleur thoracique, difficulté à respirer, convulsions, évanouissement, mal de tête sévère avec troubles visuels, fièvre avec grand malaise, ou douleur/gonflement d’un seul mollet.',showUrgent:'Voir les contacts urgents',bookTitle:'Prendre rendez-vous',bookBody:'Pression ou sensation de boule pelvienne nouvelle/croissante, souci de cicatrice, douleur persistante, alimentation douloureuse, incontinence préoccupante, ou humeur basse/anxiété qui gêne la vie quotidienne.',scopeTitle:'Ce que ce compagnon peut—et ne peut pas—faire',scopeBody:'Il peut offrir de l’information, de la réflexion et des pratiques douces de bien-être. Il ne peut pas examiner votre corps, diagnostiquer, fournir une thérapie, prescrire ni gérer une urgence.',navHome:'Accueil',navChat:'Parler',navMove:'Bouger',navCare:'Aide',needsEyebrow:'Votre village répond',needsTitle:"De quoi avez-vous besoin ?",villageEyebrow:'Votre village',rightNow:"Pour l'instant",whoCanHelp:'Des personnes pour vous aider',comingSoon:"Bientôt — les adresses d'Amandine",dirIbclcTitle:'Consultantes en lactation IBCLC',dirIbclcSub:'En visio, et en cabinet à New York.',dirPtTitle:'Kinés du périnée',dirPtSub:'En cabinet à New York, certaines en visio.',dirOfficial:'Annuaires officiels',dirNote:'Les adresses d’Amandine, vérifiées en novembre 2026. Les tarifs et les assurances changent, vérifiez auprès du praticien avant de réserver.',dirTele:'Téléconsultation',dirInPerson:'En cabinet',dirFrench:'Français',dirSite:'Site web',backToNeeds:'Tous les besoins',editBtn:'Modifier le texte',pinTitle:'Entrez votre code',pinPlaceholder:'Code à 4 chiffres',pinOk:'Modifier',pinCancel:'Annuler',wrongPin:'Code incorrect — réessayez',publish:'Publier ✓',published:'En ligne — vos changements sont publiés',exitEdit:'Terminé',triageTitle:'Je ne sais pas — aidez-moi',triageSub:'On va comprendre ensemble',triageEyebrow:'Un tri tout doux',triageHead:'Que se passe-t-il ?',triBody:'Mon corps',triBaby:'Mon bébé',triEmo:'Mes émotions',triSleep:'Je n’arrive pas à dormir',triScared:'J’ai peur',triSomeone:'J’ai besoin de quelqu’un',triIdk:'Je ne sais pas',lvlGreenT:'Soutien du quotidien',lvlGreenB:'L’appli peut aider pour :',green1:'Récupération',green2:'Mouvement',green3:'Respiration',green4:'Sommeil',green5:'Conseils alimentation',green6:'Organisation',green7:'Ressources',lvlOrangeT:'Contactez votre professionnel de santé',orange1:'Symptômes persistants',orange2:'Anxiété importante',orange3:'Humeur qui se dégrade',orange4:'Douleur inhabituelle',orange5:'Difficultés à fonctionner',orange6:'Symptômes nécessitant une évaluation médicale',lvlRedT:'Ceci nécessite une aide immédiate',lvlRedB:'Cela peut être une urgence médicale. Contactez les urgences maintenant.',planTag:'Mon village, sur une page',planEyebrow:'Plan de soins post-partum',planTitle:'Mon plan de soins',planCardT:'Mon plan de soins',planCardS:'Votre village, sur une page',planBefore:'Avant l’arrivée de bébé',planF1:'Personne de confiance',planF2:'Qui peut venir la nuit',planF3:'Qui peut apporter des repas',planF4:'Qui peut garder les aînés',planF5:'Mon gynéco / ma sage-femme',planF6:'Mon pédiatre',planF7:'Mutuelle / assurance',planF8:'Ressources santé mentale à ma disposition',roadmapT:'Ma feuille de route post-partum',roadmapIntro:'À remplir avant l\'arrivée de bébé (ou dès les premiers jours), à relire quand tu te sens perdue. Ce n\'est pas un contrat : rature, modifie, recommence.',roadmapF1:'Mes signaux quand ça déborde',roadmapH1:'Chacune a les siens. Les reconnaître, c\'est déjà reprendre la main. Exemples : je pleure sans raison précise · je n\'arrive plus à dormir même quand le bébé dort · tout m\'irrite · je n\'ai plus envie de voir personne',roadmapF2:'Mes personnes ressources',roadmapH2:'Celles déjà notées dans ton plan de post-partum : recopie ici les 2-3 vers qui te tourner en premier.',roadmapF3:'Mes non-négociables',roadmapH3:'2 ou 3 petites choses qui te maintiennent à flot. Pas des objectifs, des bouées. Exemples : une douche par jour · un repas chaud · 10 minutes dehors',roadmapF4:'Si je suis submergée, je…',roadmapH4:'3 étapes, dans l\'ordre, décidées à froid. Ex : 1. Je fais une pause (je pose le bébé en sécurité et je sors 5 minutes) · 2. J\'appelle… · 3. Si ça ne passe pas (j\'appelle ma sage-femme / mon médecin)',roadmapF5:'Une phrase pour mon moi futur',roadmapH5:'Écris-la comme tu parlerais à une amie. Ex : « Tu es en train d\'apprendre, et c\'est normal que ce soit dur. »',roadmapOutro:'Ce plan peut changer. Rature-le autant que tu veux : c\'est une boussole, pas un contrat.',planPartnerT:'Si je ne vais pas bien, je veux que mon partenaire…',planP1:'Appeler mon médecin',planP2:'Rester avec moi',planP3:'Appeler ma mère',planP4:'Prendre le relais pour bébé',planP5:'M’aider à obtenir des soins',planSave:'Enregistrer mon plan',planSaved:'Plan enregistré — votre village, sur une page.',planCopy:'Copier le plan',planCopied:'Plan copié.',planCopyFail:'Copie indisponible ici.',planEdit:'Modifier',planEmpty:'Rien n’est encore rempli — votre plan apparaîtra ici.',planSummaryT:'Mon village, sur une page',tileBody:'Mon corps',tileBaby:'Mon bébé',tileEmotions:'Mes émotions',tileSleep:'Je n’arrive pas à dormir',tileScared:'J’ai peur',tileHelp:'J’ai besoin d’aide',tileIdk:'Je ne sais pas',seeAllNeeds:'Voir tous les besoins',relatedTitle:'Voir aussi',tStoriesTile:'Témoignages',tStoriesTitle:'Témoignages',tStoriesSub:'Des histoires vraies, vérifiées',tMinRead:'min de lecture',searchPlaceholder:'Rechercher par symptôme…',searchResults:'Résultats',searchNoResults:'Aucun guide ne correspond pour l’instant. Essaie d’autres mots, ou parle avec Mon Village.',searchUrgent:'Ça ressemble à une urgence. Vérifie les signes d’alerte d’abord, et appelle le 911 si tu as besoin d’aide tout de suite.',searchTalk:'Parler avec Mon Village',searchClear:'Effacer la recherche',tRelatedStories:'Témoignages liés',tArticles:'Articles',tAllStories:'Toutes les histoires',resDialogTitle:'Ajouter une ressource',resLabel:'Nom',resNote:'Description',resUrl:'Lien (https://…)',resSave:'Enregistrer',resReset:'Revenir à « bientôt »',resCancel:'Annuler',editHintRes:'Touchez un texte pour le modifier · Touchez 🔗 pour ajouter un lien',gBody:'Mon corps',gBaby:'Mon bébé',gEmo:'Mes émotions',gRest:'Repos',notSure:'Vous hésitez ? Parlez avec Mon Village →',programLibrary:'Programme de récupération',programEyebrow:'Votre programme de récupération',programTitle:'Reconstruisez semaine après semaine.',programIntro:"Les vraies vidéos du programme postnatal d'Amandine, organisées par semaine. Choisissez selon le temps, l'intensité ou le sujet — ou lisez la série complète.",myWeek:'Ma semaine post-partum',youAreHere:'Vous êtes ici',playSeries:'▶ Lire la série complète',weekSaved:'Programme ajusté à votre semaine ✓',villageGuideEyebrow:'Le guide du village',villageGuideTitle:'Ton village, en pratique',villageGuideIntro:'Un guide pour construire ton système de soutien : qui appeler, les aides payantes qui valent le coup, et comment choisir qui tu laisses entrer.',
+    tlTitle:"La timeline de bébé",
+    tlIntro:"Entre la date de naissance de ton bébé, et Mon Village te montre les rendez-vous à ne pas manquer pendant sa première année, pour lui et pour toi.",
+    tlBirthPrompt:"Quelle est la date de naissance de ton bébé ?",
+    tlPrivacy:"Cette date reste sur ton téléphone. Rien n'est envoyé, rien n'est partagé.",
+    tlSeeAll:"Voir toute la timeline",
+    tlAddCal:"Ajouter à mon calendrier",
+    tlIcsDone:"Fichier calendrier téléchargé",
+    tlMarkDone:"Marquer comme fait",
+    tlDone:"Fait",
+    tlTodo:"À faire",
+    tlForBaby:"Pour bébé",
+    tlForYou:"Pour toi",
+    tlMomNote:"Ce n'est plus une seule visite à 6 semaines : les recommandations actuelles décrivent un suivi en plusieurs temps.",
+    tlVaccinesLabel:"Vaccins recommandés à cet âge",
+    tlVaccinesNote:"Les vaccins listés ici sont ceux que le calendrier recommande à chaque âge, et ce qu'ils protègent. Si tu as des questions sur les vaccins, ou si tu veux en discuter avant de décider, parles-en à ton ou ta pédiatre : c'est la personne qui peut répondre et adapter le calendrier à ton bébé.",
+    tlCaveat1:"Ton ou ta pédiatre peut adapter ces dates selon ton bébé. Cette timeline est un guide, pas une prescription.",
+    tlCaveat2:"Pour les vaccins, l'académie américaine de pédiatrie publie son propre calendrier 2026, un peu différent de celui des autorités sanitaires fédérales (CDC). C'est le plan de ton ou ta pédiatre qui compte.",
+    tlSourcesBody:"calendrier des visites de l'académie américaine de pédiatrie (Bright Futures) ; calendrier vaccinal de l'enfant des CDC ; ACOG, avis du comité 736, Optimizing Postpartum Care, 2018.",
+    tlConfirmTime:"Confirme l'heure avec le cabinet.",
+    tlMomContactNote:"Si ce n'est pas encore fait, contacte ton médecin cette semaine.",
+    tlAddBirth:"Ajoute la date de naissance de ton bébé pour voir les rendez-vous à venir.",
+    esTitle:"Les essentiels de bébé",
+    esIntro:"Coche ce qu'il te reste. Quand un article est bientôt fini, il passe dans ta liste de courses.",
+    esHint:"Touche un article pour changer son stock.",
+    esShopTitle:"Ma liste de courses",
+    esShopEmpty:"Rien à racheter pour l'instant.",
+    esCopy:"Copier la liste",
+    esCopied:"Liste copiée.",
+    esBought:"Marquer comme acheté",
+    esReset:"Tout remettre à zéro",
+    esStockOk:"Stock OK",
+    esStockLow:"Bientôt fini",
+    esStockBuy:"À racheter",
+    esRestock:"articles à racheter.",
+    esRestockOne:"article à racheter.",
+    esSourcesBody:"recommandation de l'académie américaine de pédiatrie sur la vitamine D (400 UI par jour pour les bébés)."}
   };
+  var TIMELINE={
+ "en": [
+  {
+   "id": "ped-3d",
+   "section": "baby",
+   "age": "3 to 5 days",
+   "label": "First pediatric visit",
+   "title": "First pediatric visit",
+   "desc": "First check: weight, jaundice, feeding, and the results of the screening tests done in the hospital in the first days.",
+   "vaccines": "Hepatitis B, first dose, if it was not given at birth."
+  },
+  {
+   "id": "ped-1m",
+   "section": "baby",
+   "age": "1 month",
+   "label": "One-month visit",
+   "title": "One-month visit",
+   "desc": "Growth, feeding, and how you are feeling. Screening for the mother's mood is part of this visit.",
+   "vaccines": "Hepatitis B, second dose, between 1 and 2 months."
+  },
+  {
+   "id": "ped-2m",
+   "section": "baby",
+   "age": "2 months",
+   "label": "Two-month visit",
+   "title": "Two-month visit",
+   "desc": "Growth and development, and the first vaccines.",
+   "vaccines": "Diphtheria, tetanus and whooping cough, Hib (a germ that can cause serious infections), pneumococcal (a germ that causes pneumonia and meningitis), polio, and rotavirus (a virus that causes severe diarrhea in babies). First doses."
+  },
+  {
+   "id": "ped-4m",
+   "section": "baby",
+   "age": "4 months",
+   "label": "Four-month visit",
+   "title": "Four-month visit",
+   "desc": "Growth and development, and the next round of vaccines.",
+   "vaccines": "Second doses of the same vaccines as at 2 months."
+  },
+  {
+   "id": "ped-6m",
+   "section": "baby",
+   "age": "6 months",
+   "label": "Six-month visit",
+   "title": "Six-month visit",
+   "desc": "Growth and development, and starting solid foods.",
+   "vaccines": "Third doses, and the flu vaccine, every year from 6 months."
+  },
+  {
+   "id": "ped-9m",
+   "section": "baby",
+   "age": "9 months",
+   "label": "Nine-month visit",
+   "title": "Nine-month visit",
+   "desc": "A developmental check: how your baby moves, communicates and plays.",
+   "vaccines": "No vaccines usually planned, except catch-up doses."
+  },
+  {
+   "id": "ped-12m",
+   "section": "baby",
+   "age": "12 months",
+   "label": "Twelve-month visit",
+   "title": "Twelve-month visit",
+   "desc": "A full check of the first year, and a blood test that checks whether your baby has enough iron.",
+   "vaccines": "Measles, mumps and rubella, chickenpox, hepatitis A (first dose), and Hib and pneumococcal boosters."
+  },
+  {
+   "id": "mom-3w",
+   "section": "mom",
+   "age": "Within the first 3 weeks",
+   "label": "First check-in with your OB",
+   "title": "First check-in after birth",
+   "desc": "A first contact with your OB, the doctor who cared for you during pregnancy, in person or by phone. A time to talk about your recovery, your mood and how your baby is feeding.",
+   "vaccines": null
+  },
+  {
+   "id": "mom-12w",
+   "section": "mom",
+   "age": "No later than 12 weeks",
+   "label": "Book the appointment with your OB for the 6-week visit",
+   "title": "Comprehensive postpartum visit",
+   "desc": "The comprehensive visit, no later than 12 weeks. In practice, many offices schedule it around 6 weeks. It covers your mood, how your baby is feeding, contraception, sleep and your physical recovery.",
+   "vaccines": null
+  }
+ ],
+ "fr": [
+  {
+   "id": "ped-3d",
+   "section": "baby",
+   "age": "3 à 5 jours",
+   "label": "Première visite chez le ou la pédiatre",
+   "title": "Première visite chez le ou la pédiatre",
+   "desc": "Premier contrôle : poids, jaunisse, alimentation, et les résultats des tests faits à la maternité dans les premiers jours.",
+   "vaccines": "Hépatite B, première dose, si elle n'a pas été faite à la naissance."
+  },
+  {
+   "id": "ped-1m",
+   "section": "baby",
+   "age": "1 mois",
+   "label": "Visite du premier mois",
+   "title": "Visite du premier mois",
+   "desc": "Croissance, alimentation, et comment tu te sens, toi. Le dépistage de l'humeur de la maman fait partie de cette visite.",
+   "vaccines": "Hépatite B, deuxième dose, entre 1 et 2 mois."
+  },
+  {
+   "id": "ped-2m",
+   "section": "baby",
+   "age": "2 mois",
+   "label": "Visite des 2 mois",
+   "title": "Visite des 2 mois",
+   "desc": "Croissance et développement, et les premiers vaccins.",
+   "vaccines": "Diphtérie, tétanos et coqueluche, Hib (une bactérie qui peut causer des infections graves), pneumocoque (une bactérie qui cause pneumonies et méningites), polio, et rotavirus (un virus qui cause des diarrhées graves chez les bébés). Premières doses."
+  },
+  {
+   "id": "ped-4m",
+   "section": "baby",
+   "age": "4 mois",
+   "label": "Visite des 4 mois",
+   "title": "Visite des 4 mois",
+   "desc": "Croissance et développement, et la suite des vaccins.",
+   "vaccines": "Deuxièmes doses des mêmes vaccins qu'à 2 mois."
+  },
+  {
+   "id": "ped-6m",
+   "section": "baby",
+   "age": "6 mois",
+   "label": "Visite des 6 mois",
+   "title": "Visite des 6 mois",
+   "desc": "Croissance et développement, et on parle de commencer les aliments solides.",
+   "vaccines": "Troisièmes doses, et le vaccin contre la grippe, chaque année à partir de 6 mois."
+  },
+  {
+   "id": "ped-9m",
+   "section": "baby",
+   "age": "9 mois",
+   "label": "Visite des 9 mois",
+   "title": "Visite des 9 mois",
+   "desc": "Un bilan du développement : comment bébé bouge, communique et joue.",
+   "vaccines": "Pas de vaccins prévus en général, sauf rattrapage."
+  },
+  {
+   "id": "ped-12m",
+   "section": "baby",
+   "age": "12 mois",
+   "label": "Visite des 12 mois",
+   "title": "Visite des 12 mois",
+   "desc": "Un bilan complet de la première année, et un test de sang qui vérifie si bébé a assez de fer.",
+   "vaccines": "Rougeole, oreillons et rubéole, varicelle, hépatite A (première dose), et rappels Hib et pneumocoque."
+  },
+  {
+   "id": "mom-3w",
+   "section": "mom",
+   "age": "Dans les 3 premières semaines",
+   "label": "Premier contact avec ton OB",
+   "title": "Premier contact après la naissance",
+   "desc": "Un premier contact avec ton OB, le médecin qui a suivi ta grossesse, en personne ou par téléphone. C'est le moment de parler de ta récupération, de ton humeur et de l'alimentation de bébé.",
+   "vaccines": null
+  },
+  {
+   "id": "mom-12w",
+   "section": "mom",
+   "age": "Au plus tard à 12 semaines",
+   "label": "Réserver le rendez-vous avec ton OB pour la visite des 6 semaines",
+   "title": "Visite complète post-partum",
+   "desc": "La visite complète, au plus tard à 12 semaines. En pratique, beaucoup de cabinets la placent vers 6 semaines. On y parle de ton humeur, de l'alimentation de bébé, de la contraception, du sommeil et de ta récupération physique.",
+   "vaccines": null
+  }
+ ]
+};
+  var ESSENTIALS={
+ "en": [
+  {
+   "id": "diapers",
+   "name": "Diapers",
+   "desc": "For changes, day and night."
+  },
+  {
+   "id": "wipes",
+   "name": "Wipes",
+   "desc": "To clean at every change."
+  },
+  {
+   "id": "cream",
+   "name": "Diaper cream",
+   "desc": "To protect bottom skin from irritation."
+  },
+  {
+   "id": "formula",
+   "name": "Infant formula (if bottle-feeding)",
+   "desc": "Powder or ready-to-feed milk, if your baby is bottle-fed."
+  },
+  {
+   "id": "milkbags",
+   "name": "Milk storage bags (if pumping)",
+   "desc": "To store pumped milk, in the fridge or freezer."
+  },
+  {
+   "id": "cotton",
+   "name": "Cotton pads",
+   "desc": "To clean your baby's face and skin folds."
+  },
+  {
+   "id": "saline",
+   "name": "Saline solution",
+   "desc": "To clean your baby's nose when it is stuffy."
+  },
+  {
+   "id": "vitd",
+   "name": "Vitamin D drops",
+   "desc": "400 IU a day, the recommended dose for babies."
+  },
+  {
+   "id": "laundry",
+   "name": "Baby laundry detergent",
+   "desc": "A gentle detergent for your baby's clothes and linens."
+  }
+ ],
+ "fr": [
+  {
+   "id": "diapers",
+   "name": "Couches",
+   "desc": "Pour le change, jour et nuit."
+  },
+  {
+   "id": "wipes",
+   "name": "Lingettes",
+   "desc": "Pour nettoyer les fesses à chaque change."
+  },
+  {
+   "id": "cream",
+   "name": "Crème pour le change",
+   "desc": "Pour protéger la peau des fesses des irritations."
+  },
+  {
+   "id": "formula",
+   "name": "Lait infantile (si biberon)",
+   "desc": "Le lait en poudre ou liquide, si bébé est nourri au biberon."
+  },
+  {
+   "id": "milkbags",
+   "name": "Sachets de conservation du lait (si tire-lait)",
+   "desc": "Pour conserver le lait que tu tires, au frigo ou au congélateur."
+  },
+  {
+   "id": "cotton",
+   "name": "Coton",
+   "desc": "Pour nettoyer le visage de bébé et les petits plis de la peau."
+  },
+  {
+   "id": "saline",
+   "name": "Sérum physiologique",
+   "desc": "Pour nettoyer le nez de bébé quand il est encombré."
+  },
+  {
+   "id": "vitd",
+   "name": "Gouttes de vitamine D",
+   "desc": "400 UI par jour, la dose recommandée pour les bébés."
+  },
+  {
+   "id": "laundry",
+   "name": "Lessive bébé",
+   "desc": "Une lessive douce, pour laver les vêtements et le linge de bébé."
+  }
+ ]
+};
   var checkData={
     en:[
       {q:'How is your body today?',sub:'Pain · bleeding · incision · pelvic symptoms · headaches · swelling · energy',opts:['Struggling','Uncomfortable','Okay','Good']},
@@ -574,15 +913,15 @@
   function q(s){return document.querySelector(s)} function qa(s){return Array.from(document.querySelectorAll(s))}
   function tr(k){return (T[state.lang]&&T[state.lang][k])||k}
   function fillI18n(root){Array.from(root.querySelectorAll('[data-i18n]')).forEach(function(el){var k=el.dataset.i18n;if(T[state.lang][k])el.textContent=T[state.lang][k]});Array.from(root.querySelectorAll('[data-i18n-placeholder]')).forEach(function(el){el.placeholder=tr(el.dataset.i18nPlaceholder)})}
-  function applyLanguage(){document.documentElement.lang=state.lang;fillI18n(document);qa('.lang').forEach(function(b){b.classList.toggle('active',b.dataset.lang===state.lang)});q('#languageChoices').querySelectorAll('.choice').forEach(function(b){b.classList.toggle('selected',b.dataset.value===state.lang)});updateHome();renderChat();renderNeedList();if(q('#need').classList.contains('active')){if(state.needId)renderNeed(state.needId);else if(state.triageOpen)renderTriage()}if(q('#session').classList.contains('active'))renderProgram();if(q('#articles').classList.contains('active'))renderArticles();if(q('#checkin').classList.contains('active'))renderCheck();if(q('#care').classList.contains('active'))renderCare();if(q('#plan').classList.contains('active'))renderVillageGuide();applyOverrides();}
-  function go(id){qa('.screen').forEach(function(s){s.classList.remove('active')});q('#'+id).classList.add('active');var main=['home','chat','session','care','need','articles','article','dir-ibclc','dir-pelvicpt'].includes(id);q('#bottomNav').classList.toggle('show',main);qa('.nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset.go===id)});window.scrollTo(0,0);if(id==='chat')renderChat();if(id==='checkin'){state.check={};state.bodyChoice=null;renderCheck()}if(id==='home'){updateHome();renderNeedList()}if(id==='session')renderProgram();if(id==='player')setupPlayer();if(id==='care')renderCare();if(id==='plan'){renderPlan();renderVillageGuide()}if(id==='articles')renderArticles();if(id==='dir-ibclc'||id==='dir-pelvicpt')renderDirectory(id);}
+  function applyLanguage(){document.documentElement.lang=state.lang;fillI18n(document);qa('.lang').forEach(function(b){b.classList.toggle('active',b.dataset.lang===state.lang)});q('#languageChoices').querySelectorAll('.choice').forEach(function(b){b.classList.toggle('selected',b.dataset.value===state.lang)});updateHome();renderChat();renderNeedList();if(q('#need').classList.contains('active')){if(state.needId)renderNeed(state.needId);else if(state.triageOpen)renderTriage()}if(q('#session').classList.contains('active'))renderProgram();if(q('#articles').classList.contains('active'))renderArticles();if(q('#checkin').classList.contains('active'))renderCheck();if(q('#care').classList.contains('active'))renderCare();if(q('#plan').classList.contains('active'))renderVillageGuide();if(q('#timeline').classList.contains('active'))renderTimeline();if(q('#essentials').classList.contains('active'))renderEssentials();applyOverrides();}
+  function go(id){qa('.screen').forEach(function(s){s.classList.remove('active')});q('#'+id).classList.add('active');var main=['home','chat','session','care','need','articles','article','dir-ibclc','dir-pelvicpt','timeline','essentials'].includes(id);q('#bottomNav').classList.toggle('show',main);qa('.nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset.go===id)});window.scrollTo(0,0);if(id==='chat')renderChat();if(id==='checkin'){state.check={};state.bodyChoice=null;renderCheck()}if(id==='home'){updateHome();renderNeedList()}if(id==='session')renderProgram();if(id==='player')setupPlayer();if(id==='care')renderCare();if(id==='plan'){renderPlan();renderVillageGuide()}if(id==='articles')renderArticles();if(id==='dir-ibclc'||id==='dir-pelvicpt')renderDirectory(id);if(id==='timeline')renderTimeline();if(id==='essentials')renderEssentials();}
   qa('[data-go]').forEach(function(b){b.addEventListener('click',function(){if(state.editing)return;go(b.dataset.go)})});
   qa('.lang').forEach(function(b){b.addEventListener('click',function(){if(state.editing)return;state.lang=b.dataset.lang;applyLanguage()})});   wireSearch();
   qa('[data-next]').forEach(function(b){b.addEventListener('click',function(){var n=b.dataset.next;qa('.form-step').forEach(function(x){x.classList.toggle('active',x.dataset.step===n)});q('#onboardProgress').style.width=(Number(n)*33.33)+'%'})});
   qa('#birthChoices .choice').forEach(function(b){b.addEventListener('click',function(){state.birth=b.dataset.value;qa('#birthChoices .choice').forEach(function(x){x.classList.toggle('selected',x===b)})})});
   qa('#languageChoices .choice').forEach(function(b){b.addEventListener('click',function(){state.lang=b.dataset.value;applyLanguage()})});
   q('#finishOnboard').addEventListener('click',function(){state.name=q('#name').value.trim()||(state.lang==='fr'?'Maman':'Mama');state.country=q('#country').value;go('home')});
-  function updateHome(){var hr=new Date().getHours(),g=state.lang==='fr'?(hr<12?'Bonjour':hr<18?'Bon après-midi':'Bonsoir'):(hr<12?'Good morning':hr<18?'Good afternoon':'Good evening');q('#hello').textContent=g+(state.name?', '+state.name:'');q('#avatar').textContent=(state.name||'M').charAt(0).toUpperCase();q('#todayLabel').textContent=new Intl.DateTimeFormat(state.lang==='fr'?'fr-FR':'en-US',{weekday:'long',month:'long',day:'numeric'}).format(new Date());renderHero();renderSaved();renderVillageStrip()}
+  function updateHome(){var hr=new Date().getHours(),g=state.lang==='fr'?(hr<12?'Bonjour':hr<18?'Bon après-midi':'Bonsoir'):(hr<12?'Good morning':hr<18?'Good afternoon':'Good evening');q('#hello').textContent=g+(state.name?', '+state.name:'');q('#avatar').textContent=(state.name||'M').charAt(0).toUpperCase();q('#todayLabel').textContent=new Intl.DateTimeFormat(state.lang==='fr'?'fr-FR':'en-US',{weekday:'long',month:'long',day:'numeric'}).format(new Date());renderHero();renderSaved();renderVillageStrip();renderTimelineReminder();renderEssentialsStrip()}
   
 var DAYPLANS={en:{
 worried:{label:'Something feels different',guides:['warningsigns','advocacy'],session:'clinical',gesture:'Call the maternity unit or your doctor today.',gtime:'5 min',epds:false,crisis:'medical'},
@@ -741,6 +1080,13 @@ function renderNeedList(){var byId={};NEEDS[state.lang].forEach(function(n){byId
   q('#needList').addEventListener('click',function(e){if(state.editing)return;var b=e.target.closest('[data-need]');if(b)openNeed(b.dataset.need)});
   q('#needBody').addEventListener('click',function(e){if(state.editing)return;var t=e.target.closest('[data-triage]');if(t){var tg=TRIAGE[Number(t.dataset.triage)].target;if(tg[0]==='need')openNeed(tg[1]);else go(tg[0]);return}var r=e.target.closest('[data-rel]');if(r){openNeed(r.dataset.rel);return}var ar=e.target.closest('[data-article]');if(ar){openArticle(ar.dataset.article,'need');return}var b=e.target.closest('[data-go]');if(b)go(b.dataset.go)});   q('#heroCard').addEventListener('click',function(e){if(state.editing)return;var ar=e.target.closest('[data-article]');if(ar){openArticle(ar.dataset.article,'home');return}var nd=e.target.closest('[data-need]');if(nd){openNeed(nd.dataset.need);return}var b=e.target.closest('[data-go]');if(b)go(b.dataset.go)});   q('#recommendation').addEventListener('click',function(e){if(state.editing)return;var ar=e.target.closest('[data-article]');if(ar){openArticle(ar.dataset.article,'recommendation');return}var nd=e.target.closest('[data-need]');if(nd){openNeed(nd.dataset.need);return}var b=e.target.closest('#recGuides [data-go], #recGesture [data-go]');if(b)go(b.dataset.go)});
   q('#needBody').addEventListener('click',function(e){var rb=e.target.closest('[data-resbtn]');if(rb){e.preventDefault();e.stopPropagation();if(state.editing)openResDialog(rb.dataset.resbtn);return}if(state.editing){var a=e.target.closest('a[data-res]');if(a)e.preventDefault()}});
+
+  q('#timelineReminder').addEventListener('click',function(e){if(state.editing)return;var ic=e.target.closest('[data-ics]');if(ic){downloadICS(ic.dataset.ics);return;}var op=e.target.closest('[data-tl-open]');if(op){state.tlOpen=op.dataset.tlOpen;go('timeline');return;}var b=e.target.closest('[data-go]');if(b)go(b.dataset.go);});
+  q('#essentialsStrip').addEventListener('click',function(e){if(state.editing)return;var b=e.target.closest('[data-go]');if(b)go(b.dataset.go);});
+  q('#timeline').addEventListener('click',function(e){if(state.editing)return;var ic=e.target.closest('[data-ics]');if(ic){downloadICS(ic.dataset.ics);return;}var dn=e.target.closest('[data-tldone]');if(dn){var id=dn.dataset.tldone;var s=getTlDone();var i=s.indexOf(id);if(i>=0)s.splice(i,1);else s.push(id);try{localStorage.setItem('mv_timeline_done',JSON.stringify(s));}catch(err){}renderTimeline();updateHome();return;}var b=e.target.closest('[data-go]');if(b)go(b.dataset.go);});
+  q('#essentials').addEventListener('click',function(e){if(state.editing)return;var st=e.target.closest('[data-stock]');if(st){var s=getStock();var cur=s[st.dataset.stock]||'ok';s[st.dataset.stock]=cur==='ok'?'low':(cur==='low'?'buy':'ok');saveStock(s);renderEssentials();updateHome();return;}if(e.target.closest('[data-es-bought]')){var s2=getStock();Object.keys(s2).forEach(function(k){if(s2[k]==='buy')s2[k]='ok';});saveStock(s2);renderEssentials();updateHome();return;}if(e.target.closest('[data-es-copy]')){copyEssentials();return;}if(e.target.closest('[data-es-reset]')){saveStock({});renderEssentials();updateHome();return;}});
+  q('#birthDate').addEventListener('change',function(){var v=q('#birthDate').value||null;try{if(v)localStorage.setItem('mv_birthdate',v);else localStorage.removeItem('mv_birthdate');}catch(err){}renderTimeline();updateHome();});
+
   var TRIAGE=[{key:'triBody',target:['need','pain']},{key:'triBaby',target:['need','baby']},{key:'triEmo',target:['need','low']},{key:'triSleep',target:['need','sleepless']},{key:'triScared',target:['need','wrong']},{key:'triSomeone',target:['need','lonely']},{key:'triIdk',target:['chat']}];
   function renderTriage(){q('#needTitle').textContent=tr('triageHead');q('#needTitle').setAttribute('data-ov','triage.head');q('#needBody').innerHTML='<div class="eyebrow" data-i18n="triageEyebrow"></div><div class="resource-list">'+TRIAGE.map(function(t,i){return '<button class="resource-card need-action" data-triage="'+i+'"><strong data-i18n="'+t.key+'"></strong><span aria-hidden="true"> ›</span></button>'}).join('')+'</div>';fillI18n(q('#needBody'));applyOverrides()}
   function openTriage(){state.needId=null;state.triageOpen=true;renderTriage();go('need')}  function findArticle(aid){var a=null;(ARTICLES[state.lang]||ARTICLES.en).forEach(function(x){if(x.id===aid)a=x});return a}  
@@ -800,6 +1146,153 @@ function isSaved(id){return getSaved().indexOf(id)>=0}
 function toggleSave(id){var s=getSaved(),i=s.indexOf(id);if(i>=0){s.splice(i,1);toast(tr('saveRemoved'))}else{s.push(id);toast(tr('saveAdded'))}try{localStorage.setItem('mv_saved',JSON.stringify(s))}catch(e){}renderSaved();return isSaved(id)}
 function renderSaved(){var w=q('#savedWrap');if(!w)return;var ids=getSaved();if(!ids.length){w.innerHTML='';return}var list=(ARTICLES[state.lang]||ARTICLES.en);var rows='';ids.forEach(function(id){var a=null;list.forEach(function(x){if(x.id===id)a=x});if(a)rows+='<button class="plan-row" data-article="'+id+'"><span class="plan-row-title">'+escapeHtml(a.title)+'</span><span class="plan-row-time">'+a.readMins+' '+escapeHtml(tr('tMinRead'))+'</span></button>'});if(!rows){w.innerHTML='';return}w.innerHTML='<div class="eyebrow" style="margin:18px 2px 8px">'+escapeHtml(tr('savedTitle'))+'</div>'+rows}
 function renderVillageStrip(){var w=q('#villageStrip');if(!w)return;var r=villageRowsHTML();if(!r||getDayPlan()){w.innerHTML='';return}w.innerHTML='<div class="eyebrow" style="margin:18px 2px 8px">'+escapeHtml(tr('villageTitle'))+'</div>'+r}
+
+/* TIMELINE + ESSENTIALS dashboard widgets, staged 2026-11-16 */
+function getBirthdate(){try{return localStorage.getItem('mv_birthdate')||null;}catch(e){return null;}}
+function getTlDone(){try{var d=JSON.parse(localStorage.getItem('mv_timeline_done')||'null');return Array.isArray(d)?d:[];}catch(e){return [];}}
+function getStock(){try{var d=JSON.parse(localStorage.getItem('mv_stock')||'null');return (d&&typeof d==='object')?d:{};}catch(e){return {};}}
+function saveStock(s){try{localStorage.setItem('mv_stock',JSON.stringify(s));}catch(e){}}
+function tlToday(){var n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate());}
+function tlAddDays(d,n){return new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);}
+function tlAddMonths(d,n){var y=d.getFullYear(),m=d.getMonth()+n,day=d.getDate();var last=new Date(y,m+1,0).getDate();return new Date(y,m,Math.min(day,last));}
+function tlParse(iso){var p=String(iso||'').split('-');if(p.length!==3)return null;var d=new Date(Number(p[0]),Number(p[1])-1,Number(p[2]));return isNaN(d.getTime())?null:d;}
+function capFirst(s){return s?s.charAt(0).toUpperCase()+s.slice(1):s;}
+function tlFmtDate(d){return new Intl.DateTimeFormat(state.lang==='fr'?'fr-FR':'en-US',{weekday:'long',day:'numeric',month:'long'}).format(d);}
+function tlFmtRange(c){var fD=new Intl.DateTimeFormat(state.lang==='fr'?'fr-FR':'en-US',{day:'numeric'});var fDM=new Intl.DateTimeFormat(state.lang==='fr'?'fr-FR':'en-US',{day:'numeric',month:'long'});var fMS=new Intl.DateTimeFormat(state.lang==='fr'?'fr-FR':'en-US',{month:'short',day:'numeric'});if(state.lang==='fr'){if(c.date.getMonth()===c.end.getMonth())return fD.format(c.date)+' au '+fDM.format(c.end);return fDM.format(c.date)+' au '+fDM.format(c.end);}if(c.date.getMonth()===c.end.getMonth())return fMS.format(c.date)+'–'+fD.format(c.end);return fMS.format(c.date)+' – '+fMS.format(c.end);}
+function tlComputed(){
+  var b=tlParse(getBirthdate());if(!b)return [];
+  var list=TIMELINE[state.lang]||TIMELINE.en;
+  var moMap={'ped-1m':1,'ped-2m':2,'ped-4m':4,'ped-6m':6,'ped-9m':9,'ped-12m':12};
+  var out=list.map(function(m){
+    var c={m:m,window:false,date:null,end:null,event:null,sort:null};
+    if(m.id==='ped-3d'){c.window=true;c.date=tlAddDays(b,3);c.end=tlAddDays(b,5);c.event=tlAddDays(b,4);c.sort=c.date;}
+    else if(m.id==='mom-3w'){c.window=true;c.date=tlAddDays(b,14);c.end=tlAddDays(b,21);c.event=tlAddDays(b,14);c.sort=c.date;}
+    else if(m.id==='mom-12w'){c.date=tlAddDays(b,42);c.event=c.date;c.sort=c.date;}
+    else{c.date=tlAddMonths(b,moMap[m.id]||0);c.event=c.date;c.sort=c.date;}
+    return c;
+  });
+  out.sort(function(a,b){return a.sort-b.sort;});
+  return out;
+}
+function tlNext(today){
+  today=today||tlToday();
+  var done=getTlDone();
+  var list=tlComputed();
+  for(var i=0;i<list.length;i++){
+    var c=list[i];
+    if(done.indexOf(c.m.id)>=0)continue;
+    var due=c.window?true:(today.getTime()>=c.date.getTime()-14*86400000);
+    if(!due)continue;
+    c.overdue=c.window?(today.getTime()>c.end.getTime()):(today.getTime()>c.date.getTime());
+    return c;
+  }
+  return null;
+}
+function renderTimelineReminder(){
+  var w=q('#timelineReminder');if(!w)return;
+  var b=getBirthdate();
+  if(!b){w.innerHTML='<button class="text-btn" data-go="timeline" style="width:100%;text-align:left;padding:10px 2px">'+escapeHtml(tr('tlAddBirth'))+' →</button>';return;}
+  var nx=tlNext();
+  var link='<button class="text-btn" data-go="timeline" style="width:100%;margin-top:2px">'+escapeHtml(tr('tlSeeAll'))+' →</button>';
+  if(!nx){w.innerHTML=link;return;}
+  var m=nx.m;
+  var dateTxt=nx.window?((m.id==='ped-3d')?tlFmtRange(nx):escapeHtml(m.age)):capFirst(tlFmtDate(nx.date));
+  var line;
+  if(nx.overdue){line=escapeHtml(tr('tlTodo'))+' · '+escapeHtml(m.label)+', '+dateTxt;}
+  else{line=dateTxt+' · '+escapeHtml(m.label);}
+  w.innerHTML='<div class="card" style="margin-bottom:6px"><button class="plan-row" data-tl-open="'+m.id+'" style="border:0;background:transparent;padding:4px 0"><span class="plan-row-title" style="text-align:left">'+line+'</span><span class="chev" aria-hidden="true">›</span></button><button class="secondary" data-ics="'+m.id+'" style="width:100%;margin-top:10px">'+escapeHtml(tr('tlAddCal'))+'</button></div>'+link;
+}
+function renderEssentialsStrip(){
+  var w=q('#essentialsStrip');if(!w)return;
+  var st=getStock(),n=0;
+  Object.keys(st).forEach(function(k){if(st[k]==='buy')n++;});
+  if(n>0){w.innerHTML='<button class="plan-row" data-go="essentials" style="margin-top:14px"><span class="plan-row-title">'+n+' '+escapeHtml(tr(n===1?'esRestockOne':'esRestock'))+'</span><span class="chev" aria-hidden="true">›</span></button>';return;}
+  w.innerHTML='';
+}
+function tlRowHTML(c,isDone){
+  var m=c.m;
+  var dateTxt=c.window?escapeHtml(m.age):(m.id==='ped-3d'?escapeHtml(tlFmtRange(c)):capFirst(tlFmtDate(c.date)));
+  var doneTag=isDone?' <span aria-hidden="true">✓</span>':'';
+  var vac=m.vaccines?'<p style="margin-top:10px"><strong>'+escapeHtml(tr('tlVaccinesLabel'))+(state.lang==='fr'?' :':':')+'</strong> '+escapeHtml(m.vaccines)+'</p>':'';
+  return '<details class="art-acc" id="tl-'+m.id+'"><summary><span class="tl-date">'+dateTxt+'</span> '+escapeHtml(m.title)+doneTag+'</summary><div class="art-acc-body"><p>'+escapeHtml(m.desc)+'</p>'+vac+'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px"><button class="secondary" data-ics="'+m.id+'">'+escapeHtml(tr('tlAddCal'))+'</button><button class="secondary" data-tldone="'+m.id+'">'+escapeHtml(isDone?tr('tlDone')+' ✓':tr('tlMarkDone'))+'</button></div></div></details>';
+}
+function renderTimeline(){
+  var b=getBirthdate();
+  var inp=q('#birthDate');if(inp)inp.value=b||'';
+  var list=q('#timelineList');if(!list)return;
+  var done=getTlDone();
+  if(!b){list.innerHTML='<p class="muted">'+escapeHtml(tr('tlAddBirth'))+'</p>';}
+  else{
+    var comp=tlComputed();
+    var html='';
+    var secs=[['baby',tr('tlForBaby')],['mom',tr('tlForYou')]];
+    secs.forEach(function(sec){
+      var rows=comp.filter(function(c){return c.m.section===sec[0];});
+      if(!rows.length)return;
+      html+='<div class="eyebrow" style="margin:22px 2px 10px">'+escapeHtml(sec[1])+'</div>';
+      if(sec[0]==='mom')html+='<p class="muted" style="font-size:13px">'+escapeHtml(tr('tlMomNote'))+'</p>';
+      rows.forEach(function(c){html+=tlRowHTML(c,done.indexOf(c.m.id)>=0);});
+    });
+    list.innerHTML=html;
+  }
+  var foot=q('#timelineFoot');
+  if(foot){foot.innerHTML='<p class="muted" style="font-size:13px;margin-top:18px">'+escapeHtml(tr('tlCaveat1'))+'</p><p class="muted" style="font-size:13px">'+escapeHtml(tr('tlCaveat2'))+'</p><p class="muted" style="font-size:13px">'+escapeHtml(tr('tlVaccinesNote'))+'</p><details class="art-acc"><summary>Sources</summary><div class="art-acc-body"><p>'+escapeHtml(tr('tlSourcesBody'))+'</p></div></details><button class="text-btn" data-go="essentials" style="width:100%;margin-top:6px">'+escapeHtml(tr('esTitle'))+' →</button>';}
+  if(state.tlOpen){var d=q('#tl-'+state.tlOpen);if(d){d.open=true;d.scrollIntoView();}state.tlOpen=null;}
+}
+function renderEssentials(){
+  var list=q('#essentialsList');if(!list)return;
+  var st=getStock();
+  var items=ESSENTIALS[state.lang]||ESSENTIALS.en;
+  list.innerHTML=items.map(function(it){
+    var s=st[it.id]||'ok';
+    var label=s==='buy'?tr('esStockBuy'):(s==='low'?tr('esStockLow'):tr('esStockOk'));
+    return '<button class="plan-row" data-stock="'+it.id+'" style="text-align:left"><span><span class="plan-row-title">'+escapeHtml(it.name)+'</span><span style="display:block;font-size:13px;color:var(--muted)">'+escapeHtml(it.desc)+'</span></span><span class="stock-pill'+(s==='buy'?' buy':'')+'">'+escapeHtml(label)+'</span></button>';
+  }).join('');
+  var shop=q('#essentialsShop');if(!shop)return;
+  var buy=items.filter(function(it){return (st[it.id]||'ok')==='buy';});
+  var html='<div class="eyebrow" style="margin:22px 2px 10px">'+escapeHtml(tr('esShopTitle'))+'</div>';
+  if(!buy.length){html+='<p class="muted">'+escapeHtml(tr('esShopEmpty'))+'</p>';}
+  else{
+    html+='<div class="plan-rows">'+buy.map(function(it){return '<div class="plan-row plan-row-static"><span class="plan-row-title">'+escapeHtml(it.name)+'</span></div>';}).join('')+'</div>';
+    html+='<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px"><button class="secondary" data-es-bought>'+escapeHtml(tr('esBought'))+'</button><button class="secondary" data-es-copy>'+escapeHtml(tr('esCopy'))+'</button><button class="secondary" data-es-reset>'+escapeHtml(tr('esReset'))+'</button></div>';
+  }
+  shop.innerHTML=html;
+}
+function icsEscape(s){return String(s).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');}
+function icsFold(line){var out='',cur='',bytes=0;for(var i=0;i<line.length;i++){var ch=line[i];var b=ch.charCodeAt(0)<128?1:(ch.charCodeAt(0)<2048?2:3);if(bytes+b>75&&cur){out+=cur+'\r\n ';cur='';bytes=1;}cur+=ch;bytes+=b;}return out+cur;}
+function icsDate(d,h){function p(n){return (n<10?'0':'')+n;}return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'T'+p(h)+'0000';}
+function icsStamp(d){function p(n){return (n<10?'0':'')+n;}return d.getUTCFullYear()+p(d.getUTCMonth()+1)+p(d.getUTCDate())+'T'+p(d.getUTCHours())+p(d.getUTCMinutes())+p(d.getUTCSeconds())+'Z';}
+function icsFor(c){
+  var m=c.m;
+  var desc=m.desc;
+  if(m.vaccines)desc+=' '+tr('tlVaccinesLabel')+': '+m.vaccines;
+  if(m.id==='mom-3w')desc+=' '+tr('tlMomContactNote');
+  desc+=' '+tr('tlConfirmTime');
+  var lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Mon Village//Timeline//EN','BEGIN:VEVENT','UID:'+m.id+'-'+(getBirthdate()||'x')+'@mon-village','DTSTAMP:'+icsStamp(new Date()),'DTSTART:'+icsDate(c.event,9),'DTEND:'+icsDate(c.event,10),'SUMMARY:'+icsEscape(m.title),'DESCRIPTION:'+icsEscape(desc),'END:VEVENT','END:VCALENDAR'];
+  return lines.map(icsFold).join('\r\n');
+}
+function downloadICS(id){
+  var found=null;
+  tlComputed().forEach(function(x){if(x.m.id===id)found=x;});
+  if(!found)return;
+  var blob=new Blob([icsFor(found)],{type:'text/calendar;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='mon-village-'+id+'.ics';
+  document.body.appendChild(a);a.click();toast(tr('tlIcsDone'));
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);
+}
+function copyEssentials(){
+  var st=getStock();var items=ESSENTIALS[state.lang]||ESSENTIALS.en;
+  var buy=items.filter(function(it){return (st[it.id]||'ok')==='buy';});
+  if(!buy.length)return;
+  var txt=tr('esShopTitle')+'\n'+buy.map(function(it){return '- '+it.name;}).join('\n');
+  function done(){toast(tr('esCopied'));}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,function(){fallbackCopy(txt);done();});}
+  else{fallbackCopy(txt);done();}
+}
+function fallbackCopy(txt){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}ta.remove();}
+
 function linkifyPhones(s){return String(s).replace(/(1-8\d\d-\d\d\d-\d\d\d\d)/g,function(m){return '<a href="tel:'+m.replace(/\D/g,'')+'">'+m+'</a>'})}
   var VILLAGE={en:[{"article":"village","label": "The right to crack", "note": "A newborn's needs are intense and exhausting: you're allowed to feel weary, discouraged, at the end of your rope. Thinking it and saying it takes nothing away from the love you feel for your baby. Guilt shrinks when we speak up, dare to talk about it."},{"article":"village","label": "Your medical team: who does what", "note": "Your OB-GYN or midwife: the postpartum check (usually around 6 weeks, ACOG now recommends a first contact within 3 weeks). They're your go-to for: healing, bleeding, pain, contraception, mood. Your baby's pediatrician: frequent visits in year one (first days, 2 weeks, 1, 2, 4, 6, 9, 12 months). Your primary care doctor: for everything else, especially if you don't have an OB. Not sure who to call? Start with whoever delivered your baby."},{"article":"village","label": "Getting care with (or without) insurance", "note": "With insurance: call the number on your card and ask what's covered, postpartum visits, lactation support (often free under the ACA), mental-health care. On Medicaid: most states now cover you for 12 months after birth, see our Medicaid article. No insurance or high deductible: community health centers (findahealthcenter.hrsa.gov) charge on a sliding scale, medical, dental, mental health."},{"article":"village","label": "Feeding support & doulas", "note": "Struggling with feeding? An IBCLC lactation consultant is the specialist, often covered by insurance (ask!). Free or low-cost options: La Leche League meetings (free), WIC counselors, your hospital's lactation clinic, ask about fees and coverage. A postpartum doula is different: non-medical help (household, baby-care basics, emotional support), she doesn't replace your midwife or doctor. Medicaid covers doula care in a growing number of states; it varies, check yours."},{"article":"village","label": "Your co-pilot", "note": "No one should go through postpartum alone: you need a co-pilot. If you have a co-parent, that's them, two in the same boat, even when it rocks. Tell them clearly what you need (they're not in your head) and give them their place, even if they do things differently. If you're on your own, choose your co-pilot: your mom, your dad, your sister, a dear friend, a cousin, a trusted neighbor, someone you can say “I need help” to without apologizing, and who can stay close in the early days."},{"article":"village","label": "Your village, your choice", "note": "Your village exists to help you heal, physically and mentally. So deliberately choose who you want to see: the people who refill you, not the ones who drain you. Write down your go-to people (two or three names) and keep the list where you can see it (you can also note it in your postpartum roadmap). Don't force yourself: for everyone else, you'll find the strength later if needed. And when someone visits, they come to help: a home-cooked meal, groceries, an hour of cleaning."},{"article":"village","label": "Paid help: buying yourself breathing room", "note": "Some help can be bought, and that's ok. A night nurse when sleep debt gets too heavy (mood, patience and focus all shot): a newborn care specialist watches your baby while you sleep, for one night or more (real budget: word of mouth or a reputable agency). Delivered cooked meals: postpartum meal services or a local caterer, eating warm food without cooking changes everything in the early weeks. A house cleaner: a few hours a week for cleaning and laundry, so you stop watching the dust pile up and the hamper overflow while you recover."},{"article":"village","label": "When it's more than tiredness", "note": "If sadness settles in, if you're crying a lot, if you can't function anymore, or if dark thoughts appear, this isn't about practical help anymore: talk to your midwife, doctor or a psychologist, or take the EPDS self-screen in the app. If dark thoughts appear: 988 (US) / 3114 (France); emergency: 911 / 15 or 112."},{"article":"village","label": "A ritual for yourself", "note": "A rebozo ritual, a massage, a moment just for you: these wellbeing rituals can help release tension. They're not therapy, just parentheses, take them as such."}],fr:[{"article":"village","label": "Le droit de craquer", "note": "Les besoins d'un nouveau-né sont intenses et épuisants : tu as le droit de te sentir lasse, découragée, à bout. Le penser et le dire n'enlève rien à l'amour que tu portes à ton bébé. La culpabilité diminue quand la parole se libère, ose en parler."},{"article":"village","label": "Ton équipe médicale : qui fait quoi", "note": "Ton gynéco-obstétricien ou ta sage-femme : la visite post-partum (souvent vers 6 semaines, l'ACOG recommande désormais un premier contact sous 3 semaines). C'est vers eux que tu te tournes pour : cicatrisation, saignements, douleurs, contraception, humeur. Le pédiatre de ton bébé : visites fréquentes la première année (premiers jours, 2 semaines, 1, 2, 4, 6, 9, 12 mois). Ton médecin traitant : pour tout le reste, surtout si tu n'as pas de gynéco. Tu ne sais pas qui appeler ? Commence par celui ou celle qui a suivi ton accouchement."},{"article":"village","label": "Se soigner avec (ou sans) assurance", "note": "Avec une assurance : appelle le numéro au dos de ta carte et demande ce qui est couvert, visites post-partum, soutien à l'allaitement (souvent gratuit via l'ACA), santé mentale. Avec Medicaid : la plupart des États te couvrent 12 mois après la naissance, voir notre article Medicaid. Sans assurance ou franchise élevée : les centres de santé communautaires (findahealthcenter.hrsa.gov) facturent selon tes revenus, soins médicaux, dentaires, santé mentale."},{"article":"village","label": "Soutien allaitement & doulas", "note": "Allaitement difficile ? Une consultante en lactation IBCLC est la spécialiste, souvent couverte par l'assurance (demande !). Options gratuites ou peu coûteuses : réunions La Leche League (gratuites), conseillères WIC, clinique de lactation de ta maternité, renseigne-toi sur les tarifs et la prise en charge. Une doula post-partum, c'est différent : aide non médicale (maison, bases des soins bébé, soutien moral), elle ne remplace ni sage-femme ni médecin. Medicaid rembourse les doulas dans de plus en plus d'États ; ça varie, vérifie pour le tien."},{"article":"village","label": "Ton co-pilote", "note": "Personne ne traverse le post-partum seule : il te faut un co-pilote. Si tu as un co-parent, c'est lui, vous êtes deux dans le même bateau, même quand ça tangue. Dis-lui clairement de quoi tu as besoin (il n'est pas dans ta tête) et laisse-lui sa place, même s'il fait différemment. Si tu es seule, choisis ton co-pilote : ta maman, ton papa, ta sœur, une amie chère, une cousine, une voisine de confiance, quelqu'un à qui tu peux dire « j'ai besoin d'aide » sans t'excuser, et qui peut rester près de toi les premiers jours."},{"article":"village","label": "Ton village, tu le choisis", "note": "Ton village est là pour t'aider à aller mieux, physiquement et mentalement. Alors choisis délibérément qui tu veux voir : celles et ceux qui te ressourcent, pas celles et ceux qui t'épuisent. Écris la liste de tes personnes ressources (deux ou trois noms) et garde-la sous les yeux (tu peux aussi la noter dans ta feuille de route post-partum). Ne te force pas : pour les autres, tu retrouveras la force plus tard si besoin. Et quand quelqu'un vient, il vient aider : un plat cuisiné, des courses, une heure de ménage."},{"article":"village","label": "L'aide payante : s'offrir du répit", "note": "Certaines aides s'achètent, et c'est ok. Une nurse de nuit quand la dette de sommeil devient trop lourde (humeur, patience, concentration en berne) : une auxiliaire de puériculture veille sur ton bébé pendant que tu dors, une ou plusieurs nuits (vrai budget : bouche-à-oreille ou organisme sérieux). Des plats cuisinés livrés : services de repas post-partum ou traiteur local, manger chaud sans cuisiner change tout les premières semaines. Une aide ménagère : quelques heures par semaine pour le ménage et le linge, pour ne plus voir la poussière s'accumuler ni le panier déborder pendant que tu récupères."},{"article":"village","label": "Quand c'est plus que de la fatigue", "note": "Si la tristesse s'installe, si tu pleures beaucoup, si tu n'arrives plus à fonctionner ou si des pensées sombres apparaissent, ce n'est plus une question d'aide pratique : parles-en à ta sage-femme, ton médecin ou un psychologue, ou fais l'auto-évaluation EPDS dans l'app. En cas de pensées sombres : 988 (US) / 3114 (France) ; urgences : 911 / 15 ou 112."},{"article":"village","label": "S'offrir un rituel", "note": "Un soin rebozo, un massage, un moment rien qu'à toi : ces rituels bien-être peuvent aider à relâcher les tensions. Ce ne sont pas des thérapies, juste des parenthèses, à prendre comme telles."}]};
   function renderVillageGuide(){var el=q('#villageGuide');if(!el)return;var a=findArticle('village');if(!a){el.innerHTML='';return}el.innerHTML='<button class="resource-card need-action" data-article="village"><span class="art-tag" data-ov="art.village.tag">'+escapeHtml(a.tag)+'</span><strong data-ov="art.village.title">'+escapeHtml(a.title)+'</strong><div class="art-excerpt" data-ov="art.village.excerpt">'+escapeHtml(a.excerpt)+'</div><span class="art-meta">'+a.readMins+' '+escapeHtml(tr('tMinRead'))+'</span></button>';applyOverrides()}
